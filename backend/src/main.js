@@ -18,7 +18,7 @@ var options = {
             host: '0.0.0.0'
         },
         fs: {
-            root: path.posix.join(process.cwd(), '..', 'share'),
+            root: path.posix.normalize(path.join(process.cwd(), '../share')),
             rootName: 'share',
             ipFilter: [
                 '127.0.0.1/24',
