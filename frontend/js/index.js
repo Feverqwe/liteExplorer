@@ -75,7 +75,7 @@ require([
         var getFile = function (file) {
             var ext = '';
             var date = moment(file.mtime).format('lll');
-            var size = filesize(file.size);
+            var size = filesize(file.size || 0);
             var href = file.path;
             var target = '';
             var classList = ['file__icon', 'icon'];
@@ -95,20 +95,35 @@ require([
                         class: classList,
                         text: ext
                     }),
-                    dom.el('a', {
-                        class: 'file__name',
-                        target: target,
-                        href: href,
-                        text: file.name
-                    }),
                     dom.el('div', {
-                        class: 'file__size',
-                        text: size
-                    }),
-                    dom.el('div', {
-                        class: 'file__date',
-                        title: file.mtime,
-                        text: date
+                        class: ['main-row'],
+                        append: [
+                            dom.el('div', {
+                                class: ['first-line'],
+                                append: [
+                                    dom.el('a', {
+                                        class: 'file__name',
+                                        target: target,
+                                        href: href,
+                                        text: file.name
+                                    })
+                                ]
+                            }),
+                            dom.el('div', {
+                                class: ['second-line'],
+                                append: [
+                                    dom.el('div', {
+                                        class: 'file__size',
+                                        text: size
+                                    }),
+                                    dom.el('div', {
+                                        class: 'file__date',
+                                        title: file.mtime,
+                                        text: date
+                                    })
+                                ]
+                            })
+                        ]
                     })
                 ]
             });

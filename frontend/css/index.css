@@ -24,9 +24,9 @@
 .file {
     display: flex;
     flex-direction: row;
-    align-items: center;
     border-top: 1px solid #dddddd;
     flex-wrap: wrap;
+    align-content: center;
 }
 
 .file:last-child {
@@ -36,7 +36,7 @@
 .file__icon {
     display: block;
     width: 32px;
-    height: 32px;
+    line-height: 32px;
     background-repeat: no-repeat;
     background-position: center;
     background-size: 32px;
@@ -44,6 +44,25 @@
     text-transform: uppercase;
     font-size: 12px;
     margin: 0 5px;
+}
+
+.main-row {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.first-line {
+    display: flex;
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.second-line {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    font-size: 12px;
 }
 
 .icon-file {
@@ -56,7 +75,6 @@
 
 .file__name {
     flex-grow: 1;
-    min-height: 36px;
     margin: 0 5px;
 }
 
@@ -70,4 +88,21 @@
 
 .dialog-select_sort {
     width: 300px;
+}
+
+@media all and (min-width: 800px) {
+    /* Мы меняем местами элементы .aside-1 и .main, а также сообщаем
+     * элементу .main забирать в два раза больше места, чем сайдбары.
+     */
+    .main-row {
+        flex-direction: row;
+    }
+
+    .file__name {
+        margin: 7px 5px;
+    }
+
+    .second-line {
+        font-size: 14px;
+    }
 }
