@@ -1,0 +1,73 @@
+.head {
+    display: flex;
+    flex-direction: row;
+}
+
+.head .btn {
+    display: block;
+    width: 32px;
+    height: 32px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 24px;
+    margin: 5px;
+}
+
+.btn-sort {
+    background-image: url(../img/sort.svg);
+}
+
+.table > .file:nth-child(odd) {
+    background-color: #f9f9f9;
+}
+
+.file {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-top: 1px solid #dddddd;
+    flex-wrap: wrap;
+}
+
+.file:last-child {
+    border-bottom: 1px solid #dddddd;
+}
+
+.file__icon {
+    display: block;
+    width: 32px;
+    height: 32px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 32px;
+    text-align: center;
+    text-transform: uppercase;
+    font-size: 12px;
+    margin: 0 5px;
+}
+
+.icon-file {
+    background-image: url(../img/file.svg);
+}
+
+.icon-folder {
+    background-image: url(../img/folder.svg);
+}
+
+.file__name {
+    flex-grow: 1;
+    min-height: 36px;
+    margin: 0 5px;
+}
+
+.file__date {
+    margin: 0 5px;
+}
+
+.file__size {
+    margin: 0 5px;
+}
+
+.dialog-select_sort {
+    width: 300px;
+}
