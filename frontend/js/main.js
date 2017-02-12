@@ -198,7 +198,7 @@ define([
                                     sendAction({
                                         path: table.path,
                                         files: JSON.stringify(files.map(function (file) {
-                                            return file.path;
+                                            return file.name;
                                         })),
                                         action: 'remove'
                                     }, function (err) {

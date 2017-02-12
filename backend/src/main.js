@@ -180,7 +180,14 @@ var actions = {
                 files: files,
                 path: path.posix.join(options.config.fs.rootName, dirPath)
             };
-        })
+        });
+    },
+    remove: function (req) {
+        var dirPath = safePath(req.query.path);
+        var files = JSON.parse(req.query.files);
+        return Promise.all(function () {
+
+        });
     }
 };
 
@@ -196,7 +203,7 @@ options.expressApp.get('/fs/api', function (req, res) {
 });
 
 options.expressApp.use(path.posix.join('/fs', options.config.fs.rootName), express.static(options.config.fs.root));
-options.expressApp.use('/fs', express.static(path.join(__dirname + '/../../frontend')));
+options.expressApp.use('/fs', express.static(path.join(process.cwd() + '/../frontend')));
 
 options.server = options.expressApp.listen(options.config.express.port, options.config.express.host, function () {
     var host = options.server.address().address;
