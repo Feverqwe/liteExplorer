@@ -191,9 +191,15 @@ a.file__link.link-directory:hover:visited {
 }
 
 .dialog-remove_files {
-    width: 280px;
+    width: 300px;
 }
 
 .dialog-remove_files .item {
     display: block;
+    word-break: break-all;
+}
+
+.dialog-remove_files .dialog__items {
+    max-height: 300px;
+    overflow: auto;
 }
