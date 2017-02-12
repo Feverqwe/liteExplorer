@@ -1,6 +1,27 @@
 .head {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+
+.head .title {
+    flex-grow: 1;
+    height: 20px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-align: center;
+    text-overflow: ellipsis;
+}
+
+.head .panel {
     display: flex;
     flex-direction: row;
+    border-top: 1px solid #dddddd;
+    border-bottom: 1px solid #dddddd;
 }
 
 .head .btn {
@@ -11,6 +32,11 @@
     background-position: center;
     background-size: 24px;
     margin: 5px;
+    border-radius: 3px;
+}
+
+.btn:active {
+    background-color: #FFC200;
 }
 
 .btn-sort {
@@ -31,7 +57,11 @@
 
 .btn.btn-refresh {
     background-image: url(../img/refresh.svg);
-    background-size: 32px;
+    background-size: 31px;
+}
+
+.table {
+    margin-top: 62px;
 }
 
 .file {

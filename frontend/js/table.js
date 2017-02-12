@@ -178,6 +178,7 @@ define([
 
         ee.on('setFileList', function (response) {
             self.path = response.path;
+            ee.trigger('setTitle', [self.path.split('/').slice(-1)[0]]);
             setFiles(response.files);
         });
 

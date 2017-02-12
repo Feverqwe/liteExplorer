@@ -232,58 +232,72 @@ define([
             dialog.show();
         };
 
+        var titleNode;
+
+        ee.on('setTitle', function (text) {
+            titleNode.textContent = text;
+        });
+
         var node = dom.el('div', {
             class: 'head',
             append: [
-                dom.el('a', {
-                    href: '#sort',
-                    class: ['btn', 'btn-sort'],
-                    on: ['click', function (e) {
-                        e.preventDefault();
-                        getSortDialog();
-                    }]
+                titleNode = dom.el('div', {
+                    class: 'title'
                 }),
-                dom.el('a', {
-                    href: '#remove',
-                    class: ['btn', 'btn-remove'],
-                    on: ['click', function (e) {
-                        e.preventDefault();
-                        getRemoveDialog();
-                    }]
-                }),
-                dom.el('a', {
-                    href: '#copu',
-                    class: ['btn', 'btn-copy'],
-                    on: ['click', function (e) {
-                        e.preventDefault();
+                dom.el('div', {
+                    class: 'panel',
+                    append: [
+                        dom.el('a', {
+                            href: '#sort',
+                            class: ['btn', 'btn-sort'],
+                            on: ['click', function (e) {
+                                e.preventDefault();
+                                getSortDialog();
+                            }]
+                        }),
+                        dom.el('a', {
+                            href: '#remove',
+                            class: ['btn', 'btn-remove'],
+                            on: ['click', function (e) {
+                                e.preventDefault();
+                                getRemoveDialog();
+                            }]
+                        }),
+                        dom.el('a', {
+                            href: '#copu',
+                            class: ['btn', 'btn-copy'],
+                            on: ['click', function (e) {
+                                e.preventDefault();
 
-                    }]
-                }),
-                dom.el('a', {
-                    href: '#cut',
-                    class: ['btn', 'btn-cut'],
-                    on: ['click', function (e) {
-                        e.preventDefault();
+                            }]
+                        }),
+                        dom.el('a', {
+                            href: '#cut',
+                            class: ['btn', 'btn-cut'],
+                            on: ['click', function (e) {
+                                e.preventDefault();
 
-                    }]
-                }),
-                dom.el('a', {
-                    href: '#refresh',
-                    class: ['btn', 'btn-refresh'],
-                    on: ['click', function (e) {
-                        e.preventDefault();
+                            }]
+                        }),
+                        dom.el('a', {
+                            href: '#refresh',
+                            class: ['btn', 'btn-refresh'],
+                            on: ['click', function (e) {
+                                e.preventDefault();
 
-                        sendAction({
-                            path: table.path,
-                            action: 'files'
-                        }, function (err, response) {
-                            if (err) {
-                                throw err;
-                            }
+                                sendAction({
+                                    path: table.path,
+                                    action: 'files'
+                                }, function (err, response) {
+                                    if (err) {
+                                        throw err;
+                                    }
 
-                            ee.trigger('setFileList', [response]);
-                        });
-                    }]
+                                    ee.trigger('setFileList', [response]);
+                                });
+                            }]
+                        })
+                    ]
                 })
             ]
         });
