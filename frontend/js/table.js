@@ -189,7 +189,7 @@ define([
                     Object.keys(config.sortFolder).slice(50).forEach(function (path) {
                         delete config.sortFolder[path];
                     });
-                    sortObj = config.sortFolder[path] = JSON.parse(JSON.parse(JSON.stringify(config.defaultSort)));
+                    sortObj = config.sortFolder[path] = JSON.parse(JSON.stringify(config.defaultSort));
                 }
             } else {
                 sortObj = config.sort;
