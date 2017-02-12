@@ -36,7 +36,10 @@ define([
             url: './api?' + utils.param(params),
             json: true
         }, function (err, response) {
-            if (!err && response.body.success) {
+            if (!err && !response.body.success) {
+                err = new Error(response.body.message);
+            }
+            if (!err) {
                 callback(null, response.body);
             } else {
                 callback(err);
@@ -207,19 +210,10 @@ define([
                                             return file.name;
                                         })),
                                         action: 'remove'
-                                    }, function (err, respones) {
+                                    }, function (err) {
                                         if (err) {
                                             notification('removeFiles error!', err);
                                             throw err;
-                                        }
-                                        if (respones.path === table.path) {
-                                            respones.result.forEach(function (item) {
-                                                if (item.success) {
-                                                    table.removeFileByName(item.name);
-                                                } else {
-                                                    notification('Remove file error:', item.message);
-                                                }
-                                            });
                                         }
                                         dialog.destroy();
                                     });

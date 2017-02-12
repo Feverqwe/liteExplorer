@@ -114,18 +114,16 @@ var File = function (name, relPath) {
 
 /**
  * @param {string} dirPath
- * @param {string} name
  * @returns {Promise} always true
  */
-var stat = function (dirPath, name) {
-    return new Promise(function (resolve) {
-        var relPath = path.posix.join(dirPath, name);
+var stat = function (relPath) {
+    return new Promise(function (resolve, reject) {
         fs.stat(path.join(options.config.fs.root, relPath), function (err, stats) {
-            var file = new File(name, relPath);
-            if (!err) {
-                file.setStats(stats);
+            if (err) {
+                reject(err);
+            } else {
+                resolve(stats);
             }
-            resolve(file);
         });
     });
 };
@@ -134,6 +132,38 @@ var remove = function (dirPath, name) {
     return new Promise(function (resolve) {
         var relPath = path.posix.join(dirPath, name);
         fs.remove(path.join(options.config.fs.root, relPath), function (err) {
+            var result = {};
+            result.name = name;
+            result.success = !err;
+            if (err) {
+                result.message = err.message;
+            }
+            resolve(result);
+        });
+    });
+};
+
+var copy = function (dirPath, name, toDirPath) {
+    return new Promise(function (resolve) {
+        var fromPath = path.join(options.config.fs.root, path.posix.join(dirPath, name));
+        var toPath = path.join(options.config.fs.root, path.posix.join(toDirPath, name));
+        fs.copy(fromPath, toPath, function (err) {
+            var result = {};
+            result.name = name;
+            result.success = !err;
+            if (err) {
+                result.message = err.message;
+            }
+            resolve(result);
+        });
+    });
+};
+
+var move = function (dirPath, name, toDirPath) {
+    return new Promise(function (resolve) {
+        var fromPath = path.join(options.config.fs.root, path.posix.join(dirPath, name));
+        var toPath = path.join(options.config.fs.root, path.posix.join(toDirPath, name));
+        fs.move(fromPath, toPath, function (err) {
             var result = {};
             result.name = name;
             result.success = !err;
@@ -174,15 +204,64 @@ options.expressApp.use('/fs/api', ipfilter(options.config.fs.ipFilter, {
     allowedHeaders: ['x-forwarded-for']
 }));
 
-var daemons = [];
-var sessions = [];
+var taskList = [];
+
+var tasks = {
+    copy: function (task, req) {
+        if (req.query.button === 'paste') {
+            var dirPath = safePath(req.query.path);
+            return stat(dirPath).then(function () {
+                task.inProgress = true;
+                Promise.all(task.files.map(function (name) {
+                    return copy(task.path, name, dirPath);
+                })).then(function (result) {
+                    task.inProgress = false;
+                    task.result = result;
+                });
+            });
+        }
+    },
+    cut: function (task, req) {
+        if (req.query.button === 'paste') {
+            var dirPath = safePath(req.query.path);
+            return stat(dirPath).then(function () {
+                task.inProgress = true;
+                Promise.all(task.files.map(function (name) {
+                    return move(task.path, name, dirPath);
+                })).then(function (result) {
+                    task.inProgress = false;
+                    task.result = result;
+                });
+            });
+        }
+    },
+    remove: function (task, req) {
+        if (req.query.button === 'continue') {
+            task.inProgress = true;
+            Promise.all(task.files.map(function (name) {
+                return remove(task.path, name);
+            })).then(function (result) {
+                task.inProgress = false;
+                task.result = result;
+            });
+        }
+    }
+};
 
 var actions = {
     files: function (req) {
         var dirPath = safePath(req.query.path);
         return readDir(dirPath).then(function (files) {
             return Promise.all(files.map(function (name) {
-                return stat(dirPath, name);
+                var relPath = path.posix.join(dirPath, name);
+                var file = new File(name, relPath);
+                return stat(relPath).then(function (stats) {
+                    file.setStats(stats);
+                }, function (err) {
+                    debug('getStats error', relPath, err);
+                }).then(function () {
+                    resolve(file);
+                });
             }));
         }, function (err) {
             debug('readDir', err);
@@ -209,14 +288,92 @@ var actions = {
                 throw new Error('Some files is not found!');
             }
 
-            return Promise.all(files.map(function (name) {
-                return remove(dirPath, name);
-            }));
-        }).then(function (result) {
+            taskList.push({
+                action: 'remove',
+                path: dirPath,
+                files: files,
+                buttons: ['continue', 'cancel']
+            });
+
             return {
                 success: true,
-                result: result,
-                path: path.posix.join(options.config.fs.rootName, dirPath)
+                taskList: taskList
+            };
+        });
+    },
+    copy: function (req) {
+        var dirPath = safePath(req.query.path);
+        var files = JSON.parse(req.query.files);
+        return readDir(dirPath).then(function (localFiles) {
+            var found = files.every(function (name) {
+                return localFiles.indexOf(name) !== -1;
+            });
+
+            if (!found) {
+                throw new Error('Some files is not found!');
+            }
+
+            taskList.push({
+                action: 'copy',
+                path: dirPath,
+                files: files,
+                buttons: ['paste', 'cancel']
+            });
+
+            return {
+                success: true,
+                taskList: taskList
+            };
+        });
+    },
+    cut: function (req) {
+        var dirPath = safePath(req.query.path);
+        var files = JSON.parse(req.query.files);
+        return readDir(dirPath).then(function (localFiles) {
+            var found = files.every(function (name) {
+                return localFiles.indexOf(name) !== -1;
+            });
+
+            if (!found) {
+                throw new Error('Some files is not found!');
+            }
+
+            taskList.push({
+                action: 'cut',
+                path: dirPath,
+                files: files,
+                buttons: ['paste', 'cancel']
+            });
+
+            return {
+                success: true,
+                taskList: taskList
+            };
+        });
+    },
+    task: function (req) {
+        var taskIndex = parseInt(req.query.taskIndex);
+        var button = req.query.button;
+        var task = taskList[taskIndex];
+        if (!task) {
+            throw new Error('Task is not found!');
+        }
+
+        var pos = task.buttons.indexOf(button);
+        if (pos === -1) {
+            throw new Error('Task button is not found!');
+        }
+
+        task.buttons.splice(pos, 1);
+        return new Promise(function (resolve) {
+            return resolve(tasks[task.action](task, req));
+        }).catch(function (err) {
+            task.buttons.splice(pos, 0, button);
+            throw err;
+        }).then(function () {
+            return {
+                success: true,
+                taskList: taskList
             };
         });
     }
@@ -229,7 +386,7 @@ options.expressApp.get('/fs/api', function (req, res) {
         res.json(data);
     }).catch(function (err) {
         debug('getApi', err);
-        res.status(500).json({success: false});
+        res.status(500).json({success: false, message: err.message});
     });
 });
 
