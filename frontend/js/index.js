@@ -148,14 +148,49 @@ require([
             };
         };
 
-        var sort = function () {
+        var sortInsertList = function(tableBody, sortedList) {
+            var nodeList = [].slice.call(tableBody.childNodes);
+            var insertItems = [];
+            var insertPosition = null;
+            var nodes = null;
+            var child = null;
+
+            for (var i = 0, listItem; listItem = sortedList[i]; i++) {
+                if (nodeList[i] === listItem.node) {
+                    continue;
+                }
+                insertPosition = i;
+
+                nodes = document.createDocumentFragment();
+                while ((listItem = sortedList[i]) && listItem.node !== nodeList[i]) {
+                    var pos = nodeList.indexOf(listItem.node, i);
+                    if (pos !== -1) {
+                        nodeList.splice(pos, 1);
+                    }
+                    nodeList.splice(i, 0, listItem.node);
+
+                    nodes.appendChild(listItem.node);
+                    i++;
+                }
+
+                insertItems.push([insertPosition, nodes]);
+            }
+
+            for (var n = 0, node; node = insertItems[n]; n++) {
+                child = tableBody.childNodes[node[0]];
+                if (child !== undefined) {
+                    tableBody.insertBefore(node[1], child);
+                } else {
+                    tableBody.appendChild(node[1]);
+                }
+            }
+        };
+
+        var sortItemObjList = function (itemObjList) {
             var sortObj = config.sortFolder[currentPath] || config.sort;
 
             var type = sortObj.type;
             var reverse = sortObj.reverse;
-
-            var dirs = [];
-            var files = [];
 
             var sortFn = function (aa, bb) {
                 var a = aa.file;
@@ -167,7 +202,10 @@ require([
                 return r ? 1 : -1;
             };
 
-            itemObjList.sort(sortFn).forEach(function (itemObj) {
+            var dirs = [];
+            var files = [];
+
+            itemObjList.slice(0).sort(sortFn).forEach(function (itemObj) {
                 if (itemObj.file.isDirectory) {
                     if (itemObj.file.name === '..') {
                         dirs.unshift(itemObj);
@@ -179,9 +217,7 @@ require([
                 }
             });
 
-            itemObjList.splice(0);
-            itemObjList.push.apply(itemObjList, dirs);
-            itemObjList.push.apply(itemObjList, files);
+            return dirs.concat(files);
         };
 
         var setFiles = function (files) {
@@ -193,14 +229,10 @@ require([
                 itemObjList.push(itemObj);
             });
 
-            sort();
-
-            itemObjList.forEach(function (itemObj) {
-                tableNode.appendChild(itemObj.node);
-            });
+            sortInsertList(tableNode, sortItemObjList(itemObjList));
         };
 
-        ee.on('loadingFileList', function (response) {
+        ee.on('loadingFileList', function () {
             tableNode.textContent = '';
             itemObjList.splice(0);
         });
@@ -210,7 +242,7 @@ require([
             setFiles(response.files);
         });
 
-        ee.on('sort', function (type, path) {
+        ee.on('changeSort', function (type, path) {
             var sortObj;
             if (path) {
                 sortObj = config.sortFolder[path];
@@ -232,11 +264,7 @@ require([
 
             localStorage.config = JSON.stringify(config);
 
-            sort();
-
-            itemObjList.forEach(function (itemObj) {
-                tableNode.appendChild(itemObj.node);
-            });
+            sortInsertList(tableNode, sortItemObjList(itemObjList));
         });
 
         return tableNode;
@@ -304,7 +332,7 @@ require([
                                     folder = null;
                                     delete config.sortFolder[currentPath];
                                 }
-                                ee.trigger('sort', [type, folder]);
+                                ee.trigger('changeSort', [type, folder]);
                             }
                         }]
                     }),
