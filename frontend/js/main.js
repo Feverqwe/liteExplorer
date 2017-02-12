@@ -201,9 +201,16 @@ define([
                                             return file.name;
                                         })),
                                         action: 'remove'
-                                    }, function (err) {
+                                    }, function (err, respones) {
                                         if (err) {
                                             throw err;
+                                        }
+                                        if (respones.path === table.path) {
+                                            respones.result.forEach(function (item) {
+                                                if (item.success) {
+                                                    table.removeFileByName(item.name);
+                                                }
+                                            });
                                         }
                                         dialog.destroy();
                                     });

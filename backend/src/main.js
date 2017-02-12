@@ -136,7 +136,7 @@ var remove = function (dirPath, name) {
         fs.remove(path.join(options.config.fs.root, relPath), function (err) {
             var result = {};
             result.name = name;
-            result.success = !!err;
+            result.success = !err;
             if (err) {
                 result.message = err.message;
             }
@@ -201,8 +201,8 @@ var actions = {
         var dirPath = safePath(req.query.path);
         var files = JSON.parse(req.query.files);
         return readDir(dirPath).then(function (localFiles) {
-            var found = localFiles.every(function (name) {
-                return files.indexOf(name) !== -1;
+            var found = files.every(function (name) {
+                return localFiles.indexOf(name) !== -1;
             });
 
             if (!found) {
@@ -215,7 +215,8 @@ var actions = {
         }).then(function (result) {
             return {
                 success: true,
-                result: result
+                result: result,
+                path: path.posix.join(options.config.fs.rootName, dirPath)
             };
         });
     }
