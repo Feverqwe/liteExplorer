@@ -250,6 +250,40 @@ define([
                         e.preventDefault();
                         getRemoveDialog();
                     }]
+                }),
+                dom.el('a', {
+                    href: '#copu',
+                    class: ['btn', 'btn-copy'],
+                    on: ['click', function (e) {
+                        e.preventDefault();
+
+                    }]
+                }),
+                dom.el('a', {
+                    href: '#cut',
+                    class: ['btn', 'btn-cut'],
+                    on: ['click', function (e) {
+                        e.preventDefault();
+
+                    }]
+                }),
+                dom.el('a', {
+                    href: '#refresh',
+                    class: ['btn', 'btn-refresh'],
+                    on: ['click', function (e) {
+                        e.preventDefault();
+
+                        sendAction({
+                            path: table.path,
+                            action: 'files'
+                        }, function (err, response) {
+                            if (err) {
+                                throw err;
+                            }
+
+                            ee.trigger('setFileList', [response]);
+                        });
+                    }]
                 })
             ]
         });

@@ -21,6 +21,19 @@
     background-image: url(../img/remove.svg);
 }
 
+.btn-copy {
+    background-image: url(../img/copy.svg);
+}
+
+.btn-cut {
+    background-image: url(../img/cut.svg);
+}
+
+.btn.btn-refresh {
+    background-image: url(../img/refresh.svg);
+    background-size: 32px;
+}
+
 .file {
     display: flex;
     flex-direction: row;

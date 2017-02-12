@@ -576,6 +576,7 @@ define(function () {
         var year = dateObj.getFullYear();
         var hours = dateObj.getHours();
         var minutes = dateObj.getMinutes();
+        var seconds = dateObj.getSeconds();
         if (date < 10) {
             date = '0' + date;
         }
@@ -588,7 +589,10 @@ define(function () {
         if (minutes < 10) {
             minutes = '0' + minutes;
         }
-        return [[date, month, year].join('.'), [hours, minutes].join(':')].join(' ');
+        if (seconds < 10) {
+            seconds = '0' + seconds;
+        }
+        return [[date, month, year].join('.'), [hours, minutes, seconds].join(':')].join(' ');
     };
     return utils;
 });
