@@ -5,12 +5,11 @@
 require([
     './lib/EventEmitter.min.js',
     './lib/filesize.min.js',
-    './lib/moment.min.js',
     './js/dom',
     './js/utils',
     './js/dialog',
     './js/pageController'
-], function (EventEmitter, filesize, moment, dom, utils, Dialog, PageController) {
+], function (EventEmitter, filesize, dom, utils, Dialog, PageController) {
     var ee = new EventEmitter();
 
     var config = {};
@@ -74,7 +73,7 @@ require([
 
         var getFile = function (file) {
             var ext = '';
-            var date = moment(file.mtime).format('lll');
+            var date = utils.getDateStr(file.mtime);
             var size = filesize(file.size || 0);
             var href = file.path;
             var target = '';
@@ -88,40 +87,24 @@ require([
                 classList.push('icon-file', 'icon-' + ext);
                 target = '_blank';
             }
-            var node = dom.el('div', {
+            var node = dom.el('a', {
                 class: 'file',
+                target: target,
+                href: href,
                 append: [
                     dom.el('div', {
-                        class: classList,
-                        text: ext
+                        class: classList
                     }),
                     dom.el('div', {
-                        class: ['main-row'],
+                        class: 'second-row',
                         append: [
                             dom.el('div', {
-                                class: ['first-line'],
-                                append: [
-                                    dom.el('a', {
-                                        class: 'file__name',
-                                        target: target,
-                                        href: href,
-                                        text: file.name
-                                    })
-                                ]
+                                class: 'file__name',
+                                text: file.name
                             }),
                             dom.el('div', {
-                                class: ['second-line'],
-                                append: [
-                                    dom.el('div', {
-                                        class: 'file__size',
-                                        text: size
-                                    }),
-                                    dom.el('div', {
-                                        class: 'file__date',
-                                        title: file.mtime,
-                                        text: date
-                                    })
-                                ]
+                                class: 'file__info',
+                                text: [size, date].join(' ')
                             })
                         ]
                     })

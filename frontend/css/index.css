@@ -17,52 +17,50 @@
     background-image: url(../img/sort.svg);
 }
 
-.table > .file:nth-child(odd) {
-    background-color: #f9f9f9;
-}
-
 .file {
     display: flex;
     flex-direction: row;
-    border-top: 1px solid #dddddd;
     flex-wrap: wrap;
-    align-content: center;
+    border-top: 1px solid #dddddd;
+}
+
+a.file {
+    color: #000;
+    text-decoration: none;
+}
+
+a.file:hover {
+    background-color: #FFC200;
 }
 
 .file:last-child {
     border-bottom: 1px solid #dddddd;
 }
 
+.second-row {
+    width: calc(100% - 40px);
+}
+
+.file__name {
+    width: 100%;
+    padding: 0 5px;
+    word-break: break-all;
+}
+
+.file__info {
+    padding: 0 5px;
+    text-align: right;
+    flex-grow: 1;
+    font-size: 12px;
+}
+
 .file__icon {
     display: block;
-    width: 32px;
-    line-height: 32px;
+    width: 40px;
+
     background-repeat: no-repeat;
     background-position: center;
     background-size: 32px;
-    text-align: center;
-    text-transform: uppercase;
-    font-size: 12px;
-    margin: 0 5px;
-}
-
-.main-row {
-    display: flex;
-    flex-direction: column;
-    flex-grow: 1;
-}
-
-.first-line {
-    display: flex;
-    flex-direction: row;
-    flex-grow: 1;
-}
-
-.second-line {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    font-size: 12px;
 }
 
 .icon-file {
@@ -73,17 +71,40 @@
     background-image: url(../img/folder.svg);
 }
 
-.file__name {
-    flex-grow: 1;
-    margin: 0 5px;
+.icon-mov,
+.icon-mkv,
+.icon-mp4 {
+    background-image: url(../img/video.svg);
 }
 
-.file__date {
-    margin: 0 5px;
+.icon-dmg,
+.icon-zip,
+.icon-7z {
+    background-image: url(../img/archive.svg);
 }
 
-.file__size {
-    margin: 0 5px;
+.icon-fb2,
+.icon-epub {
+    background-image: url(../img/book.svg);
+}
+
+.icon-aac,
+.icon-flac,
+.icon-alac,
+.icon-mp3 {
+    background-image: url(../img/audio.svg);
+}
+
+.icon-ico,
+.icon-jpeg,
+.icon-jpg,
+.icon-png {
+    background-image: url(../img/image.svg);
+}
+
+.icon-log,
+.icon-txt {
+    background-image: url(../img/text.svg);
 }
 
 .dialog-select_sort {
@@ -94,15 +115,8 @@
     /* Мы меняем местами элементы .aside-1 и .main, а также сообщаем
      * элементу .main забирать в два раза больше места, чем сайдбары.
      */
-    .main-row {
-        flex-direction: row;
-    }
 
     .file__name {
         margin: 7px 5px;
-    }
-
-    .second-line {
-        font-size: 14px;
     }
 }

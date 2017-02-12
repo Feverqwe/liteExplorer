@@ -569,5 +569,26 @@ define(function () {
         code.push('API_exKit(code);');
         return code.join('\n');
     };
+    utils.getDateStr = function (time) {
+        var dateObj = new Date(time);
+        var date = dateObj.getDate();
+        var month = dateObj.getMonth() + 1;
+        var year = dateObj.getFullYear();
+        var hours = dateObj.getHours();
+        var minutes = dateObj.getMinutes();
+        if (date < 10) {
+            date = '0' + date;
+        }
+        if (month < 10) {
+            month = '0' + month;
+        }
+        if (hours < 10) {
+            hours = '0' + hours;
+        }
+        if (minutes < 10) {
+            minutes = '0' + minutes;
+        }
+        return [[date, month, year].join('.'), [hours, minutes].join(':')].join(' ');
+    };
     return utils;
 });

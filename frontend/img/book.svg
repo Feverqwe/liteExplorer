@@ -1,0 +1,8 @@
+<?xml version="1.0" ?><svg clip-rule="evenodd" fill-rule="evenodd" image-rendering="optimizeQuality" shape-rendering="geometricPrecision" text-rendering="geometricPrecision" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg"><defs><style type="text/css"><![CDATA[
+    .str0 {stroke:#434242;stroke-width:10}
+    .str1 {stroke:#434242;stroke-width:10;stroke-linejoin:round}
+    .fil3 {fill:none}
+    .fil0 {fill:url(#id0)}
+    .fil1 {fill:url(#id1)}
+    .fil2 {fill:url(#id2)}
+   ]]></style><linearGradient gradientUnits="userSpaceOnUse" id="id0" x1="80" x2="410" y1="268" y2="268"><stop offset="0" stop-color="#f5f5f5"/><stop offset="1" stop-color="#D5D6D6"/></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="id1" x1="80" x2="139" y1="268" y2="268"><stop offset="0" stop-color="#008BFF"/><stop offset="1" stop-color="#0af"/></linearGradient><linearGradient gradientUnits="userSpaceOnUse" id="id2" x1="386" x2="103" y1="75" y2="75"><stop offset="0" stop-color="#FCFCFD"/><stop offset="1" stop-color="#fff"/></linearGradient></defs><g id="Layer_x0020_1"><path class="fil0" d="M80 430c0 15 5 30 25 30h285c10 0 20-10 20-20v-340h-305c-15 0-25-10-25-24v354z"/><path class="fil1" d="M80 430c0 15 5 30 25 30h34v-360h-34c-15 0-25-10-25-24v354z"/><path class="fil2 str0" d="M105 100h305c-14 0-25-11-25-25s11-25 25-25h-305c-14 0-25 11-25 25s11 25 25 25z"/><path class="fil3 str1" d="M80 430c0 15 5 30 25 30h285c10 0 20-10 20-20v-340h-305c-15 0-25-10-25-24v354z"/></g></svg>
