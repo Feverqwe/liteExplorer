@@ -4,28 +4,31 @@ define(function () {
         var prefix = 'dialog';
         var inputList = [];
 
+        var closeEvent = function (e) {
+            e.stopPropagation();
+            e.preventDefault();
+            if (!body.contains(e.target)) {
+                self.destroy();
+            }
+        };
+
         var getLayer = function () {
             var el = document.createElement('div');
             el.classList.add(prefix + '__layer');
+            el.addEventListener('click', closeEvent);
             return el;
         };
+
         var getBody = function () {
             var el = document.createElement('div');
             el.classList.add(prefix + '__body');
             return el;
-        };
-        var closeEvent = function (e) {
-            if (!body.contains(e.target)) {
-                e.preventDefault();
-                self.destroy();
-            }
         };
 
         var body = this.body = getBody();
         var layer = this.layer = getLayer();
 
         this.destroy = function () {
-            document.removeEventListener('click', closeEvent, true);
             var parent = layer.parentNode;
             if (parent) {
                 parent.removeChild(layer);
@@ -33,7 +36,6 @@ define(function () {
         };
         this.show = function () {
             layer.appendChild(body);
-            document.addEventListener('click', closeEvent, true);
             document.body.appendChild(layer);
         };
 
