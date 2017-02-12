@@ -22,27 +22,29 @@
     flex-direction: row;
     flex-wrap: wrap;
     border-top: 1px solid #dddddd;
+    padding: 5px 0;
 }
 
-a.file {
+a.file__link {
     color: #000;
     text-decoration: none;
+    flex-grow: 1;
 }
 
-a.file:visited {
+a.file__link:visited {
     color: #609;
 }
 
-a.file.file-directory {
+a.file__link.link-directory {
     color: #000;
 }
 
-a.file.file-directory:hover:visited {
+a.file__link.link-directory:hover:visited {
     color: #609;
 }
 
-a.file:active,
-a.file:hover {
+.file:active,
+.file:hover {
     background-color: #FFC200;
 }
 
@@ -50,7 +52,7 @@ a.file:hover {
     border-bottom: 1px solid #dddddd;
 }
 
-.second-row {
+.file__link {
     width: calc(100% - 40px);
 }
 
@@ -122,7 +124,7 @@ a.file:hover {
 }
 
 .dialog-select_sort {
-    width: 300px;
+    width: 280px;
 }
 
 .dialog-select_sort a {

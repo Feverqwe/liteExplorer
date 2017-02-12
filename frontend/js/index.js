@@ -86,28 +86,28 @@ require([
             var size = filesize(file.size || 0);
             var href = file.path;
             var target = '';
-            var classList = ['file'];
+            var linkClassList = ['file__link'];
             var iconClassList = ['file__icon', 'icon'];
             if (file.isDirectory) {
                 href = '#/' + href;
                 iconClassList.push('icon-folder');
                 target = '_self';
-                classList.push('file-directory');
+                linkClassList.push('link-directory');
             } else {
                 ext = file.ext.replace('.', '');
                 iconClassList.push('icon-file', 'icon-' + ext);
                 target = '_blank';
             }
-            var node = dom.el('a', {
-                class: classList,
-                target: target,
-                href: href,
+            var node = dom.el('div', {
+                class: 'file',
                 append: [
                     dom.el('div', {
                         class: iconClassList
                     }),
-                    dom.el('div', {
-                        class: 'second-row',
+                    dom.el('a', {
+                        class: linkClassList,
+                        target: target,
+                        href: href,
                         append: [
                             dom.el('div', {
                                 class: 'file__name',
