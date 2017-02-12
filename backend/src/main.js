@@ -162,23 +162,33 @@ options.expressApp.use('/fs/api', ipfilter(options.config.fs.ipFilter, {
 var daemons = [];
 var sessions = [];
 
+var actions = {
+    files: function (req) {
+        var dirPath = safePath(req.query.path);
+        return readDir(dirPath).then(function (files) {
+            return Promise.all(files.map(function (name) {
+                return stat(dirPath, name);
+            }));
+        }, function (err) {
+            debug('readDir', err);
+            var file = new File('..', safePath(req.query.path + '/..'));
+            file.isDirectory = true;
+            return [file];
+        }).then(function (files) {
+            return {
+                success: true,
+                files: files,
+                path: path.posix.join(options.config.fs.rootName, dirPath)
+            };
+        })
+    }
+};
+
 options.expressApp.get('/fs/api', function (req, res) {
-    var dirPath = safePath(req.query.path);
-    readDir(dirPath).then(function (files) {
-        return Promise.all(files.map(function (name) {
-            return stat(dirPath, name);
-        }));
-    }, function (err) {
-        debug('readDir', err);
-        var file = new File('..', safePath(req.query.path + '/..'));
-        file.isDirectory = true;
-        return [file];
-    }).then(function (files) {
-        res.json({
-            success: true,
-            files: files,
-            path: path.posix.join(options.config.fs.rootName, dirPath)
-        });
+    new Promise(function (resolve) {
+        return resolve(actions[req.query.action](req));
+    }).then(function (data) {
+        res.json(data);
     }).catch(function (err) {
         debug('getApi', err);
         res.status(500).json({success: false});

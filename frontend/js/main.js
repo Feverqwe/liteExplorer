@@ -29,25 +29,18 @@ define([
         config.sortFolder = {};
     }
 
-    (function () {
-        var loadPath = function (path) {
-            ee.trigger('loadingFileList');
-            utils.request({
-                url: './api?' + utils.param({
-                    path: path || ''
-                }),
-                json: true
-            }, function (err, response) {
-                if (!err && response.body.success) {
-                    ee.trigger('setFileList', [response.body]);
-                } else {
-                    throw err;
-                }
-            });
-        };
-
-        ee.on('loadPath', loadPath);
-    })();
+    var sendAction = function (params, callback) {
+        return utils.request({
+            url: './api?' + utils.param(params),
+            json: true
+        }, function (err, response) {
+            if (!err && response.body.success) {
+                callback(null, response.body);
+            } else {
+                callback(err);
+            }
+        });
+    };
 
     var pageController = new PageController();
     (function (pageController) {
@@ -63,13 +56,22 @@ define([
         };
         pageController.applyUrl = function () {
             var self = pageController;
-            var title = document.title = getTitle();
 
-            ee.trigger('loadPath', [self.get('path') || '']);
+            sendAction({
+                path: self.get('path') || '',
+                action: 'files'
+            }, function (err, response) {
+                if (err) {
+                    throw err;
+                }
 
-            var url = self.getUrl();
+                ee.trigger('setFileList', [response]);
 
-            history.replaceState(null, title, url);
+                var url = self.getUrl();
+                var title = document.title = getTitle();
+
+                history.replaceState(null, title, url);
+            });
         };
     })(pageController);
 
@@ -163,16 +165,60 @@ define([
         };
 
         var getRemoveDialog = function () {
+            var files = table.getSelectedFiles();
+            if (!files.length) {
+                return;
+            }
             var dialog = new Dialog();
             dom.el(dialog.body, {
                 class: ['dialog-remove_files'],
                 append: [
+                    dom.el('span', {
+                        class: 'dialog__label',
+                        text: 'Remove files?'
+                    }),
                     dom.el('div', {
-                        append: table.getSelectedFiles().map(function (file) {
-                            return dom.el('span', {
+                        class: 'dialog__items',
+                        append: files.map(function (file) {
+                            return dom.el('div', {
+                                class: ['item'],
                                 text: file.name
                             })
                         })
+                    }),
+                    dom.el('div', {
+                        class: ['dialog__button_box'],
+                        append: [
+                            dom.el('a', {
+                                class: ['button'],
+                                href: '#add',
+                                text: 'Remove',
+                                on: ['click', function (e) {
+                                    e.preventDefault();
+                                    sendAction({
+                                        path: table.path,
+                                        files: JSON.stringify(files.map(function (file) {
+                                            return file.path;
+                                        })),
+                                        action: 'remove'
+                                    }, function (err) {
+                                        if (err) {
+                                            throw err;
+                                        }
+                                        dialog.destroy();
+                                    });
+                                }]
+                            }),
+                            dom.el('a', {
+                                class: ['button'],
+                                href: '#cancel',
+                                text: 'Cancel',
+                                on: ['click', function (e) {
+                                    e.preventDefault();
+                                    dialog.destroy();
+                                }]
+                            })
+                        ]
                     })
                 ]
             });

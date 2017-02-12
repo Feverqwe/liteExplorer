@@ -189,3 +189,11 @@ a.file__link.link-directory:hover:visited {
     text-align: center;
     padding: 8px 5px;
 }
+
+.dialog-remove_files {
+    width: 280px;
+}
+
+.dialog-remove_files .item {
+    display: block;
+}
