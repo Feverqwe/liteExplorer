@@ -110,13 +110,3 @@ a.file:hover {
 .dialog-select_sort {
     width: 300px;
 }
-
-@media all and (min-width: 800px) {
-    /* Мы меняем местами элементы .aside-1 и .main, а также сообщаем
-     * элементу .main забирать в два раза больше места, чем сайдбары.
-     */
-
-    .file__name {
-        margin: 7px 5px;
-    }
-}
