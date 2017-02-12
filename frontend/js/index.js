@@ -124,23 +124,13 @@ require([
             var type = config.sort.type;
             var reverse = config.sort.reverse;
 
-            var sortKey = '';
-            if (type === 'size') {
-                sortKey = 'size';
-            } else
-            if (type === 'name') {
-                sortKey = 'name';
-            } else {
-                sortKey = 'mtime';
-            }
-
             var dirs = [];
             var files = [];
 
             var sortFn = function (aa, bb) {
                 var a = aa.file;
                 var b = bb.file;
-                var r = a[sortKey] > b[sortKey];
+                var r = a[type] > b[type];
                 if (reverse) {
                     r = !r;
                 }
@@ -194,7 +184,6 @@ require([
                 config.sort.reverse = !config.sort.reverse;
             } else {
                 config.sort.type = type;
-                config.sort.reverse = false;
             }
 
             localStorage.config = JSON.stringify(config);
@@ -210,6 +199,14 @@ require([
     };
 
     var getHead = function () {
+        var map = {
+            name: 'Name',
+            size: 'Size',
+            atime: 'Access Time',
+            mtime: 'Modified Time',
+            ctime: 'Change Time',
+            birthtime: 'Birth Time'
+        };
         var node = dom.el('div', {
             class: 'head',
             append: [
@@ -221,29 +218,15 @@ require([
                         var dialog = new Dialog();
                         dom.el(dialog.body, {
                             class: ['dialog-select_sort'],
-                            append: [
-                                dom.el('a', {
+                            append: ['name', 'size', 'atime', 'mtime', 'ctime', 'birthtime'].map(function (type) {
+                                return dom.el('a', {
                                     data: {
-                                        type: 'date'
+                                        type: type
                                     },
-                                    href: '#date',
-                                    text: 'Date'
-                                }),
-                                dom.el('a', {
-                                    data: {
-                                        type: 'name'
-                                    },
-                                    href: '#name',
-                                    text: 'Name'
-                                }),
-                                dom.el('a', {
-                                    data: {
-                                        type: 'size'
-                                    },
-                                    href: '#size',
-                                    text: 'Size'
+                                    href: '#' + type,
+                                    text: map[type]
                                 })
-                            ],
+                            }),
                             on: ['click', function (e) {
                                 e.preventDefault();
                                 dialog.destroy();
