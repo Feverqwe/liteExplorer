@@ -6,7 +6,7 @@ var express = require('express');
 var ipfilter = require('express-ipfilter').IpFilter;
 var morgan = require('morgan');
 var compression = require('compression');
-var fs = require('fs');
+var fs = require('fs-extra');
 var path = require('path');
 
 var options = {
@@ -130,6 +130,21 @@ var stat = function (dirPath, name) {
     });
 };
 
+var remove = function (dirPath, name) {
+    return new Promise(function (resolve) {
+        var relPath = path.posix.join(dirPath, name);
+        fs.remove(path.join(options.config.fs.root, relPath), function (err) {
+            var result = {};
+            result.name = name;
+            result.success = !!err;
+            if (err) {
+                result.message = err.message;
+            }
+            resolve(result);
+        });
+    });
+};
+
 var safePath = function (evalPath) {
     var rootName = options.config.fs.rootName;
     var pos = evalPath.indexOf(rootName);
@@ -185,8 +200,23 @@ var actions = {
     remove: function (req) {
         var dirPath = safePath(req.query.path);
         var files = JSON.parse(req.query.files);
-        return Promise.all(function () {
+        return readDir(dirPath).then(function (localFiles) {
+            var found = localFiles.every(function (name) {
+                return files.indexOf(name) !== -1;
+            });
 
+            if (!found) {
+                throw new Error('Some files is not found!');
+            }
+
+            return Promise.all(files.map(function (name) {
+                return remove(dirPath, name);
+            }));
+        }).then(function (result) {
+            return {
+                success: true,
+                result: result
+            };
         });
     }
 };

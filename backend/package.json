@@ -6,6 +6,7 @@
     "debug": "^2.2.0",
     "express": "^4.13",
     "express-ipfilter": "^0.2.1",
+    "fs-extra": "^2.0.0",
     "morgan": "^1.7.0"
   }
 }
