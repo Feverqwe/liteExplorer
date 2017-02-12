@@ -124,3 +124,19 @@ a.file:hover {
 .dialog-select_sort {
     width: 300px;
 }
+
+.dialog-select_sort a {
+    display: block;
+    padding: 8px 5px;
+    color: #000;
+    text-decoration: none;
+    border-bottom: 1px solid #dddddd;
+}
+
+.dialog-select_sort a:last-child {
+    border-bottom: 0;
+}
+
+.dialog-select_sort a:hover {
+    background-color: #FFC200;
+}

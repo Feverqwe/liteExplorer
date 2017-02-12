@@ -16,6 +16,7 @@ define(function () {
         };
         var closeEvent = function (e) {
             if (!layer.contains(e.target)) {
+                e.preventDefault();
                 self.destroy();
             }
         };
