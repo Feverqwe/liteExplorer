@@ -18,7 +18,7 @@ var options = {
             host: '0.0.0.0'
         },
         fs: {
-            root: path.posix.normalize(path.join(process.cwd(), '../share')),
+            root: path.normalize(path.join(__dirname, '/../../share')),
             rootName: 'share',
             ipFilter: [
                 '127.0.0.1/24',
@@ -44,7 +44,7 @@ options.expressApp.use(compression());
  */
 var readDir = function (dirPath) {
     return new Promise(function (resolve, reject) {
-        var localPath = path.posix.join(options.config.fs.root, dirPath);
+        var localPath = path.join(options.config.fs.root, dirPath);
         fs.readdir(localPath, function (err, files) {
             if (err) {
                 reject(err);
@@ -61,7 +61,7 @@ var readDir = function (dirPath) {
 var File = function (name, relPath) {
     var self = this;
     self.name = name;
-    self.ext = path.posix.extname(name);
+    self.ext = path.extname(name);
     self.path = path.posix.join(options.config.fs.rootName, relPath);
     self.isFile = false;
     self.isDirectory = false;
@@ -120,7 +120,7 @@ var File = function (name, relPath) {
 var stat = function (dirPath, name) {
     return new Promise(function (resolve) {
         var relPath = path.posix.join(dirPath, name);
-        fs.stat(path.posix.join(options.config.fs.root, relPath), function (err, stats) {
+        fs.stat(path.join(options.config.fs.root, relPath), function (err, stats) {
             var file = new File(name, relPath);
             if (!err) {
                 file.setStats(stats);
@@ -203,7 +203,7 @@ options.expressApp.get('/fs/api', function (req, res) {
 });
 
 options.expressApp.use(path.posix.join('/fs', options.config.fs.rootName), express.static(options.config.fs.root));
-options.expressApp.use('/fs', express.static(path.join(process.cwd() + '/../frontend')));
+options.expressApp.use('/fs', express.static(path.join(__dirname + '/../../frontend')));
 
 options.server = options.expressApp.listen(options.config.express.port, options.config.express.host, function () {
     var host = options.server.address().address;
