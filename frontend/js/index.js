@@ -98,11 +98,31 @@ require([
                 iconClassList.push('icon-file', 'icon-' + ext);
                 target = '_blank';
             }
+            var selectBox = dom.el('input', {
+                class: 'file__select',
+                type: 'checkbox',
+                on: ['change', function (e) {
+                    if (this.checked) {
+                        node.classList.add('selected');
+                    } else {
+                        node.classList.remove('selected');
+                    }
+                }]
+            });
             var node = dom.el('div', {
                 class: 'file',
                 append: [
                     dom.el('div', {
-                        class: iconClassList
+                        class: iconClassList,
+                        append: [
+                            selectBox
+                        ],
+                        on: ['click', function (e) {
+                            if (e.target !== selectBox) {
+                                selectBox.checked = !selectBox.checked;
+                                selectBox.dispatchEvent(new CustomEvent('change'));
+                            }
+                        }]
                     }),
                     dom.el('a', {
                         class: linkClassList,

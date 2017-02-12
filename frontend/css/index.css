@@ -25,6 +25,10 @@
     padding: 5px 0;
 }
 
+.file.selected {
+    background-color: #dddddd;
+}
+
 a.file__link {
     color: #000;
     text-decoration: none;
@@ -43,9 +47,14 @@ a.file__link.link-directory:hover:visited {
     color: #609;
 }
 
-.file:active,
-.file:hover {
+.file:active {
     background-color: #FFC200;
+}
+
+@media screen and (min-width:800px) {
+    .file:hover {
+        background-color: #FFC200;
+    }
 }
 
 .file:last-child {
@@ -77,6 +86,15 @@ a.file__link.link-directory:hover:visited {
     background-repeat: no-repeat;
     background-position: center;
     background-size: 32px;
+}
+
+.file__select {
+    opacity: 0;
+    margin-left: 5px;
+}
+
+.file__select:checked {
+    opacity: 1;
 }
 
 .icon-file {
