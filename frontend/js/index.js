@@ -202,6 +202,7 @@ require([
         var map = {
             name: 'Name',
             size: 'Size',
+            ext: 'Extension',
             atime: 'Access Time',
             mtime: 'Modified Time',
             ctime: 'Change Time',
@@ -218,7 +219,7 @@ require([
                         var dialog = new Dialog();
                         dom.el(dialog.body, {
                             class: ['dialog-select_sort'],
-                            append: ['name', 'size', 'atime', 'mtime', 'ctime', 'birthtime'].map(function (type) {
+                            append: Object.keys(map).map(function (type) {
                                 var classList = [];
                                 if (config.sort.type === type) {
                                     classList.push('selected');
