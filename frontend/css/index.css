@@ -128,13 +128,28 @@ a.file:hover {
 .dialog-select_sort a {
     display: block;
     padding: 8px 5px;
+    padding-left: 34px;
     color: #000;
     text-decoration: none;
     border-bottom: 1px solid #dddddd;
+    background-repeat: no-repeat;
+    background-position: 5px center;
+    background-size: 24px;
 }
 
 .dialog-select_sort a:last-child {
     border-bottom: 0;
+}
+
+.dialog-select_sort a.selected {
+    background-color: #dddddd;
+    background-image: url(../img/down.svg);
+}
+
+
+.dialog-select_sort a.reverse {
+    background-color: #dddddd;
+    background-image: url(../img/up.svg);
 }
 
 .dialog-select_sort a:hover {

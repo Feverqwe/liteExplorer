@@ -219,7 +219,15 @@ require([
                         dom.el(dialog.body, {
                             class: ['dialog-select_sort'],
                             append: ['name', 'size', 'atime', 'mtime', 'ctime', 'birthtime'].map(function (type) {
+                                var classList = [];
+                                if (config.sort.type === type) {
+                                    classList.push('selected');
+                                    if (config.sort.reverse) {
+                                        classList.push('reverse');
+                                    }
+                                }
                                 return dom.el('a', {
+                                    class: classList,
                                     data: {
                                         type: type
                                     },
