@@ -1,3 +1,7 @@
+body {
+    padding-top: 62px;
+}
+
 .head {
     position: fixed;
     top: 0;
@@ -60,15 +64,24 @@
     background-size: 31px;
 }
 
-.table {
-    margin-top: 62px;
-}
-
 .file {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     border-top: 1px solid #dddddd;
+}
+
+.taskList {
+
+}
+
+.taskList .item {
+    display: flex;
+    flex-direction: row;
+}
+
+.taskList .item .item__name {
+    flex-grow: 1;
 }
 
 .file.selected {
@@ -251,4 +264,17 @@ a.file__link.link-directory:hover:visited {
 
 .dialog-remove_files .dialog__items .item:nth-child(odd) {
     background-color: #ddd;
+}
+
+.notification {
+    position: fixed;
+    right: 10px;
+    top: 10px;
+    min-width: 100px;
+    background-color: rgb(252, 123, 123);
+    opacity: 0.9;
+    padding: 5px;
+    z-index: 10;
+    color: #000;
+    text-align: center;
 }

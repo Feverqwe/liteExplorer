@@ -8,8 +8,10 @@ define([
     './utils',
     './dialog',
     './pageController',
-    './table'
-], function (EventEmitter, dom, utils, Dialog, PageController, Table) {
+    './table',
+    './taskList',
+    './notification'
+], function (EventEmitter, dom, utils, Dialog, PageController, Table, TaskList, notification) {
     var ee = new EventEmitter();
 
     var config = {};
@@ -62,6 +64,7 @@ define([
                 action: 'files'
             }, function (err, response) {
                 if (err) {
+                    notification('getFiles error!', err);
                     throw err;
                 }
 
@@ -74,6 +77,9 @@ define([
             });
         };
     })(pageController);
+
+
+    var taskList = new TaskList(ee);
 
     var table = new Table(config, ee);
 
@@ -203,12 +209,15 @@ define([
                                         action: 'remove'
                                     }, function (err, respones) {
                                         if (err) {
+                                            notification('removeFiles error!', err);
                                             throw err;
                                         }
                                         if (respones.path === table.path) {
                                             respones.result.forEach(function (item) {
                                                 if (item.success) {
                                                     table.removeFileByName(item.name);
+                                                } else {
+                                                    notification('Remove file error:', item.message);
                                                 }
                                             });
                                         }
@@ -290,6 +299,7 @@ define([
                                     action: 'files'
                                 }, function (err, response) {
                                     if (err) {
+                                        notification('getFiles error!', err);
                                         throw err;
                                     }
 
@@ -308,6 +318,7 @@ define([
 
     var explorerNode = document.querySelector('.explorer');
     explorerNode.appendChild(getHead());
+    explorerNode.appendChild(taskList.node);
     explorerNode.appendChild(table.node);
 
     pageController.applyUrl();
