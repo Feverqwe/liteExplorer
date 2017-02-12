@@ -155,3 +155,15 @@ a.file:hover {
 .dialog-select_sort a:hover {
     background-color: #FFC200;
 }
+
+.dialog-select_sort .radio-wrapper {
+    display: flex;
+    flex-direction: row;
+    align-content: space-between;
+}
+
+.dialog-select_sort .radio-wrapper label {
+    width: 50%;
+    text-align: center;
+    padding: 8px 5px;
+}

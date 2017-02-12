@@ -12,14 +12,22 @@ require([
 ], function (EventEmitter, filesize, dom, utils, Dialog, PageController) {
     var ee = new EventEmitter();
 
+    var defaultSort = JSON.stringify({type: 'mtime', reverse: false});
+
     var config = {};
     try {
         config = JSON.parse(localStorage.config);
     } catch(e){}
 
     if (!config.sort) {
-        config.sort = {type: 'date', reverse: false};
+        config.sort = JSON.parse(defaultSort);
     }
+
+    if (!config.sortFolder) {
+        config.sortFolder = {};
+    }
+
+    var currentPath = null;
 
     (function () {
         var loadPath = function (path) {
@@ -121,8 +129,10 @@ require([
         };
 
         var sort = function () {
-            var type = config.sort.type;
-            var reverse = config.sort.reverse;
+            var sortObj = config.sortFolder[currentPath] || config.sort;
+
+            var type = sortObj.type;
+            var reverse = sortObj.reverse;
 
             var dirs = [];
             var files = [];
@@ -176,14 +186,28 @@ require([
         });
 
         ee.on('setFileList', function (response) {
+            currentPath = response.path;
             setFiles(response.files);
         });
 
-        ee.on('sort', function (type) {
-            if (config.sort.type === type) {
-                config.sort.reverse = !config.sort.reverse;
+        ee.on('sort', function (type, path) {
+            var sortObj;
+            if (path) {
+                sortObj = config.sortFolder[path];
+                if (!sortObj) {
+                    Object.keys(config.sortFolder).slice(50).forEach(function (path) {
+                        delete config.sortFolder[path];
+                    });
+                    sortObj = config.sortFolder[path] = JSON.parse(defaultSort);
+                }
             } else {
-                config.sort.type = type;
+                sortObj = config.sort;
+            }
+
+            if (sortObj.type === type) {
+                sortObj.reverse = !sortObj.reverse;
+            } else {
+                sortObj.type = type;
             }
 
             localStorage.config = JSON.stringify(config);
@@ -208,6 +232,84 @@ require([
             ctime: 'Change Time',
             birthtime: 'Birth Time'
         };
+
+        var getSortDialog = function () {
+            var dialog = new Dialog();
+            var globalNode = dom.el('input', {
+                type: 'radio',
+                name: 'folder-type',
+                value: 'global'
+            });
+            var localNode = dom.el('input', {
+                type: 'radio',
+                name: 'folder-type',
+                value: 'local'
+            });
+            var sortObj;
+            if (config.sortFolder[currentPath]) {
+                sortObj = config.sortFolder[currentPath];
+                localNode.checked = true;
+            } else {
+                sortObj = config.sort;
+                globalNode.checked = true;
+            }
+            dom.el(dialog.body, {
+                class: ['dialog-select_sort'],
+                append: [
+                    dom.el('div', {
+                        append: Object.keys(map).map(function (type) {
+                            var classList = [];
+                            if (sortObj.type === type) {
+                                classList.push('selected');
+                                if (sortObj.reverse) {
+                                    classList.push('reverse');
+                                }
+                            }
+                            return dom.el('a', {
+                                class: classList,
+                                data: {
+                                    type: type
+                                },
+                                href: '#' + type,
+                                text: map[type]
+                            })
+                        }),
+                        on: ['click', function (e) {
+                            e.preventDefault();
+                            dialog.destroy();
+                            var type = e.target.dataset.type;
+                            if (type) {
+                                var folder = currentPath;
+                                if (globalNode.checked) {
+                                    folder = null;
+                                    delete config.sortFolder[currentPath];
+                                }
+                                ee.trigger('sort', [type, folder]);
+                            }
+                        }]
+                    }),
+                    dom.el('div', {
+                        class: 'radio-wrapper',
+                        append: [
+                            dom.el('label', {
+                                append: [
+                                    globalNode,
+                                    'Global'
+                                ]
+                            }),
+                            dom.el('label', {
+                                append: [
+                                    localNode,
+                                    'Local'
+                                ]
+                            })
+                        ]
+                    })
+                ]
+            });
+            dialog.show();
+        };
+
         var node = dom.el('div', {
             class: 'head',
             append: [
@@ -216,36 +318,7 @@ require([
                     class: ['btn', 'btn-sort'],
                     on: ['click', function (e) {
                         e.preventDefault();
-                        var dialog = new Dialog();
-                        dom.el(dialog.body, {
-                            class: ['dialog-select_sort'],
-                            append: Object.keys(map).map(function (type) {
-                                var classList = [];
-                                if (config.sort.type === type) {
-                                    classList.push('selected');
-                                    if (config.sort.reverse) {
-                                        classList.push('reverse');
-                                    }
-                                }
-                                return dom.el('a', {
-                                    class: classList,
-                                    data: {
-                                        type: type
-                                    },
-                                    href: '#' + type,
-                                    text: map[type]
-                                })
-                            }),
-                            on: ['click', function (e) {
-                                e.preventDefault();
-                                dialog.destroy();
-                                var type = e.target.dataset.type;
-                                if (type) {
-                                    ee.trigger('sort', [type]);
-                                }
-                            }]
-                        });
-                        dialog.show();
+                        getSortDialog();
                     }]
                 })
             ]

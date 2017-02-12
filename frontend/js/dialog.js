@@ -5,9 +5,9 @@ define(function () {
         var inputList = [];
 
         var closeEvent = function (e) {
-            e.stopPropagation();
-            e.preventDefault();
             if (!body.contains(e.target)) {
+                e.stopPropagation();
+                e.preventDefault();
                 self.destroy();
             }
         };
