@@ -58,6 +58,60 @@ var readDir = function (dirPath) {
     });
 };
 
+var File = function (name, relPath) {
+    var self = this;
+    self.name = name;
+    self.ext = path.posix.extname(name);
+    self.path = path.posix.join(options.config.fs.rootName, relPath);
+    self.isFile = false;
+    self.isDirectory = false;
+    self.isBlockDevice = false;
+    self.isCharacterDevice = false;
+    self.isSymbolicLink = false;
+    self.isFIFO = false;
+    self.isSocket = false;
+    self.size = 0;
+    self.atime = self.mtime = self.ctime = self.birthtime = (new Date(0)).toISOString();
+    /**
+     * @typedef {{}} stats,
+     * @property {number} dev
+     * @property {number} ino
+     * @property {number} mode
+     * @property {number} nlink
+     * @property {number} uid
+     * @property {number} gid
+     * @property {number} rdev
+     * @property {number} size
+     * @property {number} blksize
+     * @property {number} blocks
+     * @property {Date} atime
+     * @property {Date} mtime
+     * @property {Date} ctime
+     * @property {Date} birthtime,
+     * @property {function} isFile
+     * @property {function} isDirectory
+     * @property {function} isBlockDevice
+     * @property {function} isCharacterDevice
+     * @property {function} isSymbolicLink
+     * @property {function} isFIFO
+     * @property {function} isSocket
+     */
+    self.setStats = function (/**stats*/stats) {
+        self.isFile = stats.isFile();
+        self.isDirectory = stats.isDirectory();
+        self.isBlockDevice = stats.isBlockDevice();
+        self.isCharacterDevice = stats.isCharacterDevice();
+        self.isSymbolicLink = stats.isSymbolicLink();
+        self.isFIFO = stats.isFIFO();
+        self.isSocket = stats.isSocket();
+        self.size = stats.size;
+        self.atime = stats.atime.toISOString();
+        self.mtime = stats.mtime.toISOString();
+        self.ctime = stats.ctime.toISOString();
+        self.birthtime = stats.birthtime.toISOString();
+    };
+};
+
 /**
  * @param {string} dirPath
  * @param {string[]} files
@@ -67,51 +121,12 @@ var stat = function (dirPath, files) {
     return Promise.all(files.map(function (name) {
         return new Promise(function (resolve) {
             var relPath = path.posix.join(dirPath, name);
-            /**
-             * @typedef {{}} stats,
-             * @property {number} dev
-             * @property {number} ino
-             * @property {number} mode
-             * @property {number} nlink
-             * @property {number} uid
-             * @property {number} gid
-             * @property {number} rdev
-             * @property {number} size
-             * @property {number} blksize
-             * @property {number} blocks
-             * @property {Date} atime
-             * @property {Date} mtime
-             * @property {Date} ctime
-             * @property {Date} birthtime,
-             * @property {function} isFile
-             * @property {function} isDirectory
-             * @property {function} isBlockDevice
-             * @property {function} isCharacterDevice
-             * @property {function} isSymbolicLink
-             * @property {function} isFIFO
-             * @property {function} isSocket
-             */
-            fs.stat(path.posix.join(options.config.fs.root, relPath), function (err, /**stats*/stats) {
-                var obj = {
-                    name: name,
-                    ext: path.posix.extname(name),
-                    path: path.posix.join(options.config.fs.rootName, relPath)
-                };
+            fs.stat(path.posix.join(options.config.fs.root, relPath), function (err, stats) {
+                var file = new File(name, relPath);
                 if (!err) {
-                    obj.isFile = stats.isFile();
-                    obj.isDirectory = stats.isDirectory();
-                    obj.isBlockDevice = stats.isBlockDevice();
-                    obj.isCharacterDevice = stats.isCharacterDevice();
-                    obj.isSymbolicLink = stats.isSymbolicLink();
-                    obj.isFIFO = stats.isFIFO();
-                    obj.isSocket = stats.isSocket();
-                    obj.size = stats.size;
-                    obj.atime = stats.atime.toISOString();
-                    obj.mtime = stats.mtime.toISOString();
-                    obj.ctime = stats.ctime.toISOString();
-                    obj.birthtime = stats.birthtime.toISOString();
+                    file.setStats(stats);
                 }
-                resolve(obj);
+                resolve(file);
             });
         });
     }));
@@ -149,15 +164,20 @@ options.expressApp.use('/fs/api', ipfilter(options.config.fs.ipFilter, {
 options.expressApp.get('/fs/api', function (req, res) {
     var dirPath = safePath(req.query.path);
     readDir(dirPath).then(function (files) {
-        return stat(dirPath, files).then(function (files) {
-            res.json({
-                success: true,
-                files: files,
-                path: path.posix.join(options.config.fs.rootName, dirPath)
-            });
+        return stat(dirPath, files);
+    }, function (err) {
+        debug('readDir', err);
+        var file = new File('..', safePath(req.query.path + '/..'));
+        file.isDirectory = true;
+        return [file];
+    }).then(function (files) {
+        res.json({
+            success: true,
+            files: files,
+            path: path.posix.join(options.config.fs.rootName, dirPath)
         });
     }).catch(function (err) {
-        debug('getDir', err);
+        debug('getApi', err);
         res.status(500).json({success: false});
     });
 });

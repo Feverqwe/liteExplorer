@@ -23,6 +23,7 @@ require([
 
     (function () {
         var loadPath = function (path) {
+            ee.trigger('loadingFileList');
             utils.request({
                 url: './api?' + utils.param({
                     path: path || ''
@@ -176,6 +177,11 @@ require([
                 tableNode.appendChild(itemObj.node);
             });
         };
+
+        ee.on('loadingFileList', function (response) {
+            tableNode.textContent = '';
+            itemObjList.splice(0);
+        });
 
         ee.on('setFileList', function (response) {
             setFiles(response.files);
