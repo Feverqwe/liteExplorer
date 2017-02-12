@@ -78,23 +78,25 @@ require([
             var size = filesize(file.size || 0);
             var href = file.path;
             var target = '';
-            var classList = ['file__icon', 'icon'];
+            var classList = ['file'];
+            var iconClassList = ['file__icon', 'icon'];
             if (file.isDirectory) {
                 href = '#/' + href;
-                classList.push('icon-folder');
+                iconClassList.push('icon-folder');
                 target = '_self';
+                classList.push('file-directory');
             } else {
                 ext = file.ext.replace('.', '');
-                classList.push('icon-file', 'icon-' + ext);
+                iconClassList.push('icon-file', 'icon-' + ext);
                 target = '_blank';
             }
             var node = dom.el('a', {
-                class: 'file',
+                class: classList,
                 target: target,
                 href: href,
                 append: [
                     dom.el('div', {
-                        class: classList
+                        class: iconClassList
                     }),
                     dom.el('div', {
                         class: 'second-row',

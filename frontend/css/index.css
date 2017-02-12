@@ -29,6 +29,18 @@ a.file {
     text-decoration: none;
 }
 
+a.file:visited {
+    color: #609;
+}
+
+a.file.file-directory {
+    color: #000;
+}
+
+a.file.file-directory:hover:visited {
+    color: #609;
+}
+
 a.file:active,
 a.file:hover {
     background-color: #FFC200;
@@ -53,6 +65,7 @@ a.file:hover {
     text-align: right;
     flex-grow: 1;
     font-size: 12px;
+    color: #000;
 }
 
 .file__icon {
