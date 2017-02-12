@@ -114,22 +114,20 @@ var File = function (name, relPath) {
 
 /**
  * @param {string} dirPath
- * @param {string[]} files
+ * @param {string} name
  * @returns {Promise} always true
  */
-var stat = function (dirPath, files) {
-    return Promise.all(files.map(function (name) {
-        return new Promise(function (resolve) {
-            var relPath = path.posix.join(dirPath, name);
-            fs.stat(path.posix.join(options.config.fs.root, relPath), function (err, stats) {
-                var file = new File(name, relPath);
-                if (!err) {
-                    file.setStats(stats);
-                }
-                resolve(file);
-            });
+var stat = function (dirPath, name) {
+    return new Promise(function (resolve) {
+        var relPath = path.posix.join(dirPath, name);
+        fs.stat(path.posix.join(options.config.fs.root, relPath), function (err, stats) {
+            var file = new File(name, relPath);
+            if (!err) {
+                file.setStats(stats);
+            }
+            resolve(file);
         });
-    }));
+    });
 };
 
 var safePath = function (evalPath) {
@@ -161,10 +159,15 @@ options.expressApp.use('/fs/api', ipfilter(options.config.fs.ipFilter, {
     allowedHeaders: ['x-forwarded-for']
 }));
 
+var daemons = [];
+var sessions = [];
+
 options.expressApp.get('/fs/api', function (req, res) {
     var dirPath = safePath(req.query.path);
     readDir(dirPath).then(function (files) {
-        return stat(dirPath, files);
+        return Promise.all(files.map(function (name) {
+            return stat(dirPath, name);
+        }));
     }, function (err) {
         debug('readDir', err);
         var file = new File('..', safePath(req.query.path + '/..'));
