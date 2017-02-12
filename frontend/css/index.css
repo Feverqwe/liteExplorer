@@ -17,12 +17,15 @@
     background-image: url(../img/sort.svg);
 }
 
+.btn-remove {
+    background-image: url(../img/remove.svg);
+}
+
 .file {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     border-top: 1px solid #dddddd;
-    padding: 5px 0;
 }
 
 .file.selected {
@@ -63,16 +66,15 @@ a.file__link.link-directory:hover:visited {
 
 .file__link {
     width: calc(100% - 40px);
+    padding: 5px;
 }
 
 .file__name {
     width: 100%;
-    padding: 0 5px;
     word-break: break-all;
 }
 
 .file__info {
-    padding: 0 5px;
     text-align: right;
     flex-grow: 1;
     font-size: 12px;
@@ -86,7 +88,7 @@ a.file__link.link-directory:hover:visited {
     background-repeat: no-repeat;
     background-position: center;
     background-size: 32px;
-    padding-left: 5px;
+    padding: 5px;
 }
 
 .file__select {
