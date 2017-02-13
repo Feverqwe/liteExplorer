@@ -41,7 +41,7 @@ options.expressApp.use(compression());
 var File = function (name, urlPath) {
     var self = this;
     self.name = name;
-    self.ext = path.extname(name);
+    self.ext = '';
     self.path = urlPath;
     self.isFile = false;
     self.isDirectory = false;
@@ -89,6 +89,10 @@ var File = function (name, urlPath) {
         self.mtime = stats.mtime.toISOString();
         self.ctime = stats.ctime.toISOString();
         self.birthtime = stats.birthtime.toISOString();
+
+        if (self.isFile) {
+            self.ext = path.extname(self.name);
+        }
     };
 };
 
