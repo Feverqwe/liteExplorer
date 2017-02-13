@@ -71,13 +71,13 @@ var Tasks = function () {
             });
         },
         paste: function (task, req) {
+            var webDirFromPath = utils.safePath(task.fromPath);
             var webDirToPath = utils.safePath(req.query.path);
             var localDirToPath = path.join(options.config.fs.root, webDirToPath);
             return utils.fsStat(localDirToPath).then(function () {
                 task.buttons.splice(0);
                 task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
                 return Promise.all(task.files.map(function (name) {
-                    var webDirFromPath = utils.safePath(task.fromPath);
                     var localFromPath = path.join(options.config.fs.root, webDirFromPath, name);
                     var localToPath = path.join(localDirToPath, name);
                     var result = {name: name};
@@ -114,13 +114,13 @@ var Tasks = function () {
             });
         },
         paste: function (task, req) {
+            var webDirFromPath = utils.safePath(task.fromPath);
             var webDirToPath = utils.safePath(req.query.path);
             var localDirToPath = path.join(options.config.fs.root, webDirToPath);
             return utils.fsStat(localDirToPath).then(function () {
                 task.buttons.splice(0);
                 task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
                 Promise.all(task.files.map(function (name) {
-                    var webDirFromPath = utils.safePath(task.fromPath);
                     var localFromPath = path.join(options.config.fs.root, webDirFromPath, name);
                     var localToPath = path.join(localDirToPath, name);
                     var result = {name: name};
