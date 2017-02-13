@@ -36,7 +36,7 @@ define([
                     }),
                     actionNode = dom.el('div', {
                         class: 'task__actions',
-                        append: task.button.map(function (action) {
+                        append: task.buttons.map(function (action) {
                             return dom.el('a', {
                                 class: ['task__button', 'button', 'button-' + action],
                                 href: '#' + action,
@@ -49,7 +49,7 @@ define([
                                     var params = {
                                         action: 'task',
                                         taskId: task.id,
-                                        type: action
+                                        button: action
                                     };
                                     if (action === 'paste') {
                                         params.path = table.path

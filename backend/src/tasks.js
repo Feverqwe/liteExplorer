@@ -2,6 +2,7 @@
  * Created by Anton on 13.02.2017.
  */
 var debug = require('debug')('tasks');
+var path = require('path');
 var utils = require('./utils');
 
 var Tasks = function () {
@@ -14,6 +15,7 @@ var Tasks = function () {
         if (pos !== -1) {
             taskList.splice(pos, 1);
         }
+        return Promise.resolve();
     };
 
     this.remove = {
@@ -35,7 +37,15 @@ var Tasks = function () {
             task.buttons.splice(0);
             return Promise.all(task.files.map(function (name) {
                 var localPath = path.join(options.config.fs.root, task.path, name);
-                return utils.fsRemove(localPath);
+                var result = {name: name};
+                return utils.fsRemove(localPath).then(function () {
+                    result.success = true;
+                }, function (err) {
+                    result.success = false;
+                    result.message = err.message;
+                }).then(function () {
+                    return result;
+                });
             })).then(function (result) {
                 task.result = result;
                 task.buttons.push('close');
@@ -67,7 +77,15 @@ var Tasks = function () {
                 return Promise.all(task.files.map(function (name) {
                     var fromPath = path.join(options.config.fs.root, task.path, name);
                     var toPath = path.join(localDirPath, name);
-                    return utils.fsCopy(fromPath, toPath);
+                    var result = {name: name};
+                    return utils.fsCopy(fromPath, toPath).then(function () {
+                        result.success = true;
+                    }, function (err) {
+                        result.success = false;
+                        result.message = err.message;
+                    }).then(function () {
+                        return result;
+                    });
                 })).then(function (result) {
                     task.result = result;
                     task.buttons.push('close');
@@ -100,7 +118,15 @@ var Tasks = function () {
                 Promise.all(task.files.map(function (name) {
                     var fromPath = path.join(options.config.fs.root, task.path, name);
                     var toPath = path.join(localDirPath, name);
-                    return utils.fsMove(fromPath, toPath);
+                    var result = {name: name};
+                    return utils.fsMove(fromPath, toPath).then(function () {
+                        result.success = true;
+                    }, function (err) {
+                        result.success = false;
+                        result.message = err.message;
+                    }).then(function () {
+                        return result;
+                    });
                 })).then(function (result) {
                     task.result = result;
                     task.buttons.push('close');
@@ -147,6 +173,8 @@ var Tasks = function () {
         }).then(function () {
             task.lock = false;
         });
+
+        return Promise.resolve();
     };
 };
 

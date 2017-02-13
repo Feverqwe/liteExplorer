@@ -45,15 +45,13 @@ utils.fsStat = function (localPath) {
  * @returns {Promise}
  */
 utils.fsRemove = function (localPath) {
-    return new Promise(function (resolve) {
+    return new Promise(function (resolve, reject) {
         fs.remove(localPath, function (err) {
-            var result = {};
-            result.name = name;
-            result.success = !err;
             if (err) {
-                result.message = err.message;
+                reject(err);
+            } else {
+                resolve();
             }
-            resolve(result);
         });
     });
 };
@@ -64,15 +62,13 @@ utils.fsRemove = function (localPath) {
  * @returns {Promise}
  */
 utils.fsCopy = function (fromPath, toPath) {
-    return new Promise(function (resolve) {
+    return new Promise(function (resolve, reject) {
         fs.copy(fromPath, toPath, function (err) {
-            var result = {};
-            result.name = name;
-            result.success = !err;
             if (err) {
-                result.message = err.message;
+                reject(err);
+            } else {
+                resolve();
             }
-            resolve(result);
         });
     });
 };
@@ -83,15 +79,13 @@ utils.fsCopy = function (fromPath, toPath) {
  * @returns {Promise}
  */
 utils.fsMove = function (fromPath, toPath) {
-    return new Promise(function (resolve) {
+    return new Promise(function (resolve, reject) {
         fs.move(fromPath, toPath, function (err) {
-            var result = {};
-            result.name = name;
-            result.success = !err;
             if (err) {
-                result.message = err.message;
+                reject(err);
+            } else {
+                resolve();
             }
-            resolve(result);
         });
     });
 };

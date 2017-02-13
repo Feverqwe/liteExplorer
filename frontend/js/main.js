@@ -42,10 +42,10 @@ define([
             if (!err) {
                 var body = response.body;
                 if (body.taskList) {
-                    ee.trigger('setTaskList', body);
+                    ee.trigger('setTaskList', [body]);
                 }
                 if (body.files) {
-                    ee.trigger('setFileList', body);
+                    ee.trigger('setFileList', [body]);
                 }
                 callback(null, body);
             } else {
