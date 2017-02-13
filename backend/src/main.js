@@ -119,7 +119,7 @@ var readDir = function (localDirPath) {
  * @param {string} localPath
  * @returns {Promise} always true
  */
-var stat = function (localPath) {
+var fsStat = function (localPath) {
     return new Promise(function (resolve, reject) {
         fs.stat(localPath, function (err, stats) {
             if (err) {
@@ -259,7 +259,7 @@ var Tasks = function () {
         paste: function (task, req) {
             var webDirPath = safePath(req.query.path);
             var localDirPath = path.join(options.config.fs.root, webDirPath);
-            return stat(localDirPath).then(function () {
+            return fsStat(localDirPath).then(function () {
                 task.inProgress = true;
                 return Promise.all(task.files.map(function (name) {
                     var fromPath = path.join(options.config.fs.root, task.path, name);
@@ -296,7 +296,7 @@ var Tasks = function () {
         paste: function (task, req) {
             var webDirPath = safePath(req.query.path);
             var localDirPath = path.join(options.config.fs.root, webDirPath);
-            return stat(localDirPath).then(function () {
+            return fsStat(localDirPath).then(function () {
                 task.inProgress = true;
                 Promise.all(task.files.map(function (name) {
                     var fromPath = path.join(options.config.fs.root, task.path, name);
@@ -399,7 +399,7 @@ var actions = {
                 var webFilePath = path.posix.join(options.config.fs.rootName, webDirPath, name);
                 var file = new File(name, webFilePath);
                 var localFilePath = path.join(localDirPath, name);
-                return stat(localFilePath).then(function (stats) {
+                return fsStat(localFilePath).then(function (stats) {
                     file.setStats(stats);
                 }, function (err) {
                     debug('getStats error', webFilePath, err);
