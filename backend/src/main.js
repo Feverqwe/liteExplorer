@@ -38,31 +38,11 @@ options.expressApp.use(morgan('combined'));
 
 options.expressApp.use(compression());
 
-/**
- * @param {string} dirPath
- * @returns {Promise}
- */
-var readDir = function (dirPath) {
-    return new Promise(function (resolve, reject) {
-        var localPath = path.join(options.config.fs.root, dirPath);
-        fs.readdir(localPath, function (err, files) {
-            if (err) {
-                reject(err);
-            } else {
-                if (localPath !== options.config.fs.root) {
-                    files.push('..');
-                }
-                resolve(files);
-            }
-        });
-    });
-};
-
-var File = function (name, relPath) {
+var File = function (name, urlPath) {
     var self = this;
     self.name = name;
     self.ext = path.extname(name);
-    self.path = path.posix.join(options.config.fs.rootName, relPath);
+    self.path = urlPath;
     self.isFile = false;
     self.isDirectory = false;
     self.isBlockDevice = false;
@@ -113,12 +93,31 @@ var File = function (name, relPath) {
 };
 
 /**
- * @param {string} dirPath
+ * @param {string} localDirPath
+ * @returns {Promise}
+ */
+var readDir = function (localDirPath) {
+    return new Promise(function (resolve, reject) {
+        fs.readdir(localDirPath, function (err, files) {
+            if (err) {
+                reject(err);
+            } else {
+                if (localDirPath !== options.config.fs.root) {
+                    files.push('..');
+                }
+                resolve(files);
+            }
+        });
+    });
+};
+
+/**
+ * @param {string} localPath
  * @returns {Promise} always true
  */
-var stat = function (relPath) {
+var stat = function (localPath) {
     return new Promise(function (resolve, reject) {
-        fs.stat(path.join(options.config.fs.root, relPath), function (err, stats) {
+        fs.stat(localPath, function (err, stats) {
             if (err) {
                 reject(err);
             } else {
@@ -128,10 +127,9 @@ var stat = function (relPath) {
     });
 };
 
-var remove = function (dirPath, name) {
+var fsRemove = function (localPath) {
     return new Promise(function (resolve) {
-        var relPath = path.posix.join(dirPath, name);
-        fs.remove(path.join(options.config.fs.root, relPath), function (err) {
+        fs.remove(localPath, function (err) {
             var result = {};
             result.name = name;
             result.success = !err;
@@ -143,10 +141,8 @@ var remove = function (dirPath, name) {
     });
 };
 
-var copy = function (dirPath, name, toDirPath) {
+var fsCopy = function (fromPath, toPath) {
     return new Promise(function (resolve) {
-        var fromPath = path.join(options.config.fs.root, path.posix.join(dirPath, name));
-        var toPath = path.join(options.config.fs.root, path.posix.join(toDirPath, name));
         fs.copy(fromPath, toPath, function (err) {
             var result = {};
             result.name = name;
@@ -159,10 +155,8 @@ var copy = function (dirPath, name, toDirPath) {
     });
 };
 
-var move = function (dirPath, name, toDirPath) {
+var fsMove = function (fromPath, toPath) {
     return new Promise(function (resolve) {
-        var fromPath = path.join(options.config.fs.root, path.posix.join(dirPath, name));
-        var toPath = path.join(options.config.fs.root, path.posix.join(toDirPath, name));
         fs.move(fromPath, toPath, function (err) {
             var result = {};
             result.name = name;
@@ -174,6 +168,171 @@ var move = function (dirPath, name, toDirPath) {
         });
     });
 };
+
+var validateFiles = function (localDirPath, files) {
+    return readDir(localDirPath).then(function (localFiles) {
+        var found = files.every(function (name) {
+            return localFiles.indexOf(name) !== -1;
+        });
+
+        if (!found) {
+            throw new Error('Some files is not found!');
+        }
+    });
+};
+
+var Tasks = function () {
+    var self = this;
+    var id = 0;
+    var taskList = [];
+
+    this.remove = {
+        create: function (req) {
+            var webDirPath = safePath(req.query.path);
+            var localDirPath = path.join(options.config.fs.root, webDirPath);
+            var files = JSON.parse(req.query.files);
+            return validateFiles(localDirPath, files).then(function () {
+                taskList.push({
+                    type: 'remove',
+                    id: ++id,
+                    path: webDirPath,
+                    files: files,
+                    buttons: ['continue', 'cancel']
+                });
+            });
+        },
+        continue: function (task, req) {
+            task.inProgress = true;
+            return Promise.all(task.files.map(function (name) {
+                var localPath = path.join(options.config.fs.root, task.path, name);
+                return fsRemove(localPath);
+            })).then(function (result) {
+                task.inProgress = false;
+                task.result = result;
+            });
+        },
+        cancel: function (task, req) {
+            var pos = taskList.indexOf(task);
+            if (pos !== -1) {
+                taskList.splice(pos, 1);
+            }
+        }
+    };
+    this.copy = {
+        create: function (req) {
+            var webDirPath = safePath(req.query.path);
+            var localDirPath = path.join(options.config.fs.root, webDirPath);
+            var files = JSON.parse(req.query.files);
+            return validateFiles(localDirPath, files).then(function () {
+                taskList.push({
+                    type: 'copy',
+                    id: ++id,
+                    path: webDirPath,
+                    files: files,
+                    buttons: ['paste', 'cancel']
+                });
+            });
+        },
+        paste: function (task, req) {
+            var webDirPath = safePath(req.query.path);
+            var localDirPath = path.join(options.config.fs.root, webDirPath);
+            return stat(localDirPath).then(function () {
+                task.inProgress = true;
+                return Promise.all(task.files.map(function (name) {
+                    var fromPath = path.join(options.config.fs.root, task.path, name);
+                    var toPath = path.join(localDirPath, name);
+                    return fsCopy(fromPath, toPath);
+                })).then(function (result) {
+                    task.inProgress = false;
+                    task.result = result;
+                });
+            });
+        },
+        cancel: function (task, req) {
+            var pos = taskList.indexOf(task);
+            if (pos !== -1) {
+                taskList.splice(pos, 1);
+            }
+        }
+    };
+    this.cut = {
+        create: function (req) {
+            var webDirPath = safePath(req.query.path);
+            var localDirPath = path.join(options.config.fs.root, webDirPath);
+            var files = JSON.parse(req.query.files);
+            return validateFiles(localDirPath, files).then(function () {
+                taskList.push({
+                    type: 'cut',
+                    id: ++id,
+                    path: webDirPath,
+                    files: files,
+                    buttons: ['paste', 'cancel']
+                });
+            });
+        },
+        paste: function (task, req) {
+            var webDirPath = safePath(req.query.path);
+            var localDirPath = path.join(options.config.fs.root, webDirPath);
+            return stat(localDirPath).then(function () {
+                task.inProgress = true;
+                Promise.all(task.files.map(function (name) {
+                    var fromPath = path.join(options.config.fs.root, task.path, name);
+                    var toPath = path.join(localDirPath, name);
+                    return fsMove(fromPath, toPath);
+                })).then(function (result) {
+                    task.inProgress = false;
+                    task.result = result;
+                });
+            });
+        },
+        cancel: function (task, req) {
+            var pos = taskList.indexOf(task);
+            if (pos !== -1) {
+                taskList.splice(pos, 1);
+            }
+        }
+    };
+
+    this.getList = function () {
+        return taskList;
+    };
+    this.onTask = function (req) {
+        var taskId = parseInt(req.query.taskId);
+        var button = req.query.button;
+
+        var task = null;
+        taskList.some(function (item) {
+            if (item.id === taskId) {
+                task = item;
+                return true;
+            }
+        });
+        if (!task) {
+            throw new Error('Task is not found!');
+        }
+
+        var pos = task.buttons.indexOf(button);
+        if (pos === -1) {
+            throw new Error('Task button is not found!');
+        }
+
+        if (task.lock) {
+            throw new Error('Task is locked!');
+        }
+
+        task.buttons.splice(pos, 1);
+        task.lock = true;
+        new Promise(function (resolve) {
+            return resolve(self[task.type][button](task, req));
+        }).catch(function (err) {
+            debug('Task error!', task.type, err);
+        }).then(function () {
+            task.lock = false;
+        });
+    };
+};
+
+var tasks = new Tasks();
 
 var safePath = function (evalPath) {
     var rootName = options.config.fs.rootName;
@@ -204,176 +363,67 @@ options.expressApp.use('/fs/api', ipfilter(options.config.fs.ipFilter, {
     allowedHeaders: ['x-forwarded-for']
 }));
 
-var taskList = [];
-
-var tasks = {
-    copy: function (task, req) {
-        if (req.query.button === 'paste') {
-            var dirPath = safePath(req.query.path);
-            return stat(dirPath).then(function () {
-                task.inProgress = true;
-                Promise.all(task.files.map(function (name) {
-                    return copy(task.path, name, dirPath);
-                })).then(function (result) {
-                    task.inProgress = false;
-                    task.result = result;
-                });
-            });
-        }
-    },
-    cut: function (task, req) {
-        if (req.query.button === 'paste') {
-            var dirPath = safePath(req.query.path);
-            return stat(dirPath).then(function () {
-                task.inProgress = true;
-                Promise.all(task.files.map(function (name) {
-                    return move(task.path, name, dirPath);
-                })).then(function (result) {
-                    task.inProgress = false;
-                    task.result = result;
-                });
-            });
-        }
-    },
-    remove: function (task, req) {
-        if (req.query.button === 'continue') {
-            task.inProgress = true;
-            Promise.all(task.files.map(function (name) {
-                return remove(task.path, name);
-            })).then(function (result) {
-                task.inProgress = false;
-                task.result = result;
-            });
-        }
-    }
-};
-
 var actions = {
     files: function (req) {
-        var dirPath = safePath(req.query.path);
-        return readDir(dirPath).then(function (files) {
+        var webDirPath = safePath(req.query.path);
+        var localDirPath = path.join(options.config.fs.root, webDirPath);
+        return readDir(localDirPath).then(function (files) {
             return Promise.all(files.map(function (name) {
-                var relPath = path.posix.join(dirPath, name);
-                var file = new File(name, relPath);
-                return stat(relPath).then(function (stats) {
+                var webFilePath = path.posix.join(options.config.fs.rootName, webDirPath, name);
+                var file = new File(name, webFilePath);
+                var localFilePath = path.join(localDirPath, name);
+                return stat(localFilePath).then(function (stats) {
                     file.setStats(stats);
                 }, function (err) {
-                    debug('getStats error', relPath, err);
+                    debug('getStats error', webFilePath, err);
                 }).then(function () {
-                    resolve(file);
+                    return file;
                 });
             }));
         }, function (err) {
             debug('readDir', err);
-            var file = new File('..', safePath(req.query.path + '/..'));
+            var webFilePath = path.posix.join(options.config.fs.rootName, safePath(req.query.path + '/..'));
+            var file = new File('..', webFilePath);
             file.isDirectory = true;
             return [file];
         }).then(function (files) {
             return {
                 success: true,
                 files: files,
-                path: path.posix.join(options.config.fs.rootName, dirPath)
+                path: path.posix.join(options.config.fs.rootName, webDirPath),
+                taskList: tasks.getList()
             };
         });
     },
     remove: function (req) {
-        var dirPath = safePath(req.query.path);
-        var files = JSON.parse(req.query.files);
-        return readDir(dirPath).then(function (localFiles) {
-            var found = files.every(function (name) {
-                return localFiles.indexOf(name) !== -1;
-            });
-
-            if (!found) {
-                throw new Error('Some files is not found!');
-            }
-
-            taskList.push({
-                action: 'remove',
-                path: dirPath,
-                files: files,
-                buttons: ['continue', 'cancel']
-            });
-
+        return tasks.remove.create(req).then(function () {
             return {
                 success: true,
-                taskList: taskList
+                taskList: tasks.getList()
             };
         });
     },
     copy: function (req) {
-        var dirPath = safePath(req.query.path);
-        var files = JSON.parse(req.query.files);
-        return readDir(dirPath).then(function (localFiles) {
-            var found = files.every(function (name) {
-                return localFiles.indexOf(name) !== -1;
-            });
-
-            if (!found) {
-                throw new Error('Some files is not found!');
-            }
-
-            taskList.push({
-                action: 'copy',
-                path: dirPath,
-                files: files,
-                buttons: ['paste', 'cancel']
-            });
-
+        return tasks.copy.create(req).then(function () {
             return {
                 success: true,
-                taskList: taskList
+                taskList: tasks.getList()
             };
         });
     },
     cut: function (req) {
-        var dirPath = safePath(req.query.path);
-        var files = JSON.parse(req.query.files);
-        return readDir(dirPath).then(function (localFiles) {
-            var found = files.every(function (name) {
-                return localFiles.indexOf(name) !== -1;
-            });
-
-            if (!found) {
-                throw new Error('Some files is not found!');
-            }
-
-            taskList.push({
-                action: 'cut',
-                path: dirPath,
-                files: files,
-                buttons: ['paste', 'cancel']
-            });
-
+        return tasks.cut.create(req).then(function () {
             return {
                 success: true,
-                taskList: taskList
+                taskList: tasks.getList()
             };
         });
     },
     task: function (req) {
-        var taskIndex = parseInt(req.query.taskIndex);
-        var button = req.query.button;
-        var task = taskList[taskIndex];
-        if (!task) {
-            throw new Error('Task is not found!');
-        }
-
-        var pos = task.buttons.indexOf(button);
-        if (pos === -1) {
-            throw new Error('Task button is not found!');
-        }
-
-        task.buttons.splice(pos, 1);
-        return new Promise(function (resolve) {
-            return resolve(tasks[task.action](task, req));
-        }).catch(function (err) {
-            task.buttons.splice(pos, 0, button);
-            throw err;
-        }).then(function () {
+        return tasks.onTask(req).then(function () {
             return {
                 success: true,
-                taskList: taskList
+                taskList: tasks.getList()
             };
         });
     }
