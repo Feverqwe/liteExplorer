@@ -30,6 +30,26 @@ define([
             var itemObj = {};
             itemObj.task = task;
 
+            var getTaskInfo = function (task) {
+                if (task.type === 'remove') {
+                    return [task.path, task.files].map(JSON.stringify).join(' ')
+                } else
+                if (task.type === 'copy') {
+                    var path = [task.fromPath];
+                    if (task.toPath) {
+                        path.push(task.toPath);
+                    }
+                    return [path.map(JSON.stringify).join('>'), JSON.stringify(task.files)].join(' ')
+                } else
+                if (task.type === 'cut') {
+                    var path = [task.fromPath];
+                    if (task.toPath) {
+                        path.push(task.toPath);
+                    }
+                    return [path.map(JSON.stringify).join('>'), JSON.stringify(task.files)].join(' ')
+                }
+            };
+
             var node = dom.el('div', {
                 class: 'task',
                 data: {
@@ -45,7 +65,7 @@ define([
                     }),
                     dom.el('div', {
                         class: 'task__info',
-                        text: JSON.stringify(task)
+                        append: getTaskInfo(task)
                     }),
                     actionNode = dom.el(document.createDocumentFragment(), {
                         append: task.buttons.map(function (action) {
