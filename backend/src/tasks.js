@@ -21,67 +21,24 @@ var Tasks = function () {
     this.remove = {
         create: function (req) {
             var webDirPath = utils.safePath(req.query.path);
-            var localDirPath = path.join(options.config.fs.root, webDirPath);
             var files = JSON.parse(req.query.files);
-            return utils.validateFiles(localDirPath, files).then(function () {
-                taskList.push({
-                    type: 'remove',
-                    id: ++id,
-                    path: path.posix.join(options.config.fs.rootName, webDirPath),
-                    files: files,
-                    buttons: ['continue', 'cancel']
-                });
+            taskList.push({
+                type: 'remove',
+                id: ++id,
+                path: path.posix.join(options.config.fs.rootName, webDirPath),
+                files: files,
+                buttons: ['continue', 'cancel']
             });
         },
         continue: function (task, req) {
             task.buttons.splice(0);
-            return Promise.all(task.files.map(function (name) {
-                var wepDirPath = utils.safePath(task.path);
-                var localPath = path.join(options.config.fs.root, wepDirPath, name);
-                var result = {name: name};
-                return utils.fsRemove(localPath).then(function () {
-                    result.success = true;
-                }, function (err) {
-                    result.success = false;
-                    result.message = err.message;
-                }).then(function () {
-                    return result;
-                });
-            })).then(function (result) {
-                task.result = result;
-                task.buttons.push('close');
-            });
-        },
-        cancel: removeTask,
-        close: removeTask
-    };
-    this.copy = {
-        create: function (req) {
-            var webDirPath = utils.safePath(req.query.path);
+            var webDirPath = utils.safePath(task.fromPath);
             var localDirPath = path.join(options.config.fs.root, webDirPath);
-            var files = JSON.parse(req.query.files);
-            return utils.validateFiles(localDirPath, files).then(function () {
-                taskList.push({
-                    type: 'copy',
-                    id: ++id,
-                    fromPath: path.posix.join(options.config.fs.rootName, webDirPath),
-                    files: files,
-                    buttons: ['paste', 'cancel']
-                });
-            });
-        },
-        paste: function (task, req) {
-            var webDirFromPath = utils.safePath(task.fromPath);
-            var webDirToPath = utils.safePath(req.query.path);
-            var localDirToPath = path.join(options.config.fs.root, webDirToPath);
-            return utils.fsStat(localDirToPath).then(function () {
-                task.buttons.splice(0);
-                task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
+            return utils.validateFiles(localDirPath, task.files).then(function () {
                 return Promise.all(task.files.map(function (name) {
-                    var localFromPath = path.join(options.config.fs.root, webDirFromPath, name);
-                    var localToPath = path.join(localDirToPath, name);
+                    var localPath = path.join(localDirPath, name);
                     var result = {name: name};
-                    return utils.fsCopy(localFromPath, localToPath).then(function () {
+                    return utils.fsRemove(localPath).then(function () {
                         result.success = true;
                     }, function (err) {
                         result.success = false;
@@ -92,6 +49,49 @@ var Tasks = function () {
                 })).then(function (result) {
                     task.result = result;
                     task.buttons.push('close');
+                });
+            });
+        },
+        cancel: removeTask,
+        close: removeTask
+    };
+    this.copy = {
+        create: function (req) {
+            var webDirPath = utils.safePath(req.query.path);
+            var files = JSON.parse(req.query.files);
+            taskList.push({
+                type: 'copy',
+                id: ++id,
+                fromPath: path.posix.join(options.config.fs.rootName, webDirPath),
+                files: files,
+                buttons: ['paste', 'cancel']
+            });
+        },
+        paste: function (task, req) {
+            var webDirFromPath = utils.safePath(task.fromPath);
+            var webDirToPath = utils.safePath(req.query.path);
+            var localDirFromPath = path.join(options.config.fs.root, webDirFromPath);
+            var localDirToPath = path.join(options.config.fs.root, webDirToPath);
+            return utils.validateFiles(localDirFromPath, task.files).then(function () {
+                return utils.fsStat(localDirToPath).then(function () {
+                    task.buttons.splice(0);
+                    task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
+                    return Promise.all(task.files.map(function (name) {
+                        var localFromPath = path.join(localDirFromPath, name);
+                        var localToPath = path.join(localDirToPath, name);
+                        var result = {name: name};
+                        return utils.fsCopy(localFromPath, localToPath).then(function () {
+                            result.success = true;
+                        }, function (err) {
+                            result.success = false;
+                            result.message = err.message;
+                        }).then(function () {
+                            return result;
+                        });
+                    })).then(function (result) {
+                        task.result = result;
+                        task.buttons.push('close');
+                    });
                 });
             });
         },
@@ -101,40 +101,40 @@ var Tasks = function () {
     this.cut = {
         create: function (req) {
             var webDirPath = utils.safePath(req.query.path);
-            var localDirPath = path.join(options.config.fs.root, webDirPath);
             var files = JSON.parse(req.query.files);
-            return utils.validateFiles(localDirPath, files).then(function () {
-                taskList.push({
-                    type: 'cut',
-                    id: ++id,
-                    fromPath: path.posix.join(options.config.fs.rootName, webDirPath),
-                    files: files,
-                    buttons: ['paste', 'cancel']
-                });
+            taskList.push({
+                type: 'cut',
+                id: ++id,
+                fromPath: path.posix.join(options.config.fs.rootName, webDirPath),
+                files: files,
+                buttons: ['paste', 'cancel']
             });
         },
         paste: function (task, req) {
             var webDirFromPath = utils.safePath(task.fromPath);
             var webDirToPath = utils.safePath(req.query.path);
+            var localDirFromPath = path.join(options.config.fs.root, webDirFromPath);
             var localDirToPath = path.join(options.config.fs.root, webDirToPath);
-            return utils.fsStat(localDirToPath).then(function () {
-                task.buttons.splice(0);
-                task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
-                Promise.all(task.files.map(function (name) {
-                    var localFromPath = path.join(options.config.fs.root, webDirFromPath, name);
-                    var localToPath = path.join(localDirToPath, name);
-                    var result = {name: name};
-                    return utils.fsMove(localFromPath, localToPath).then(function () {
-                        result.success = true;
-                    }, function (err) {
-                        result.success = false;
-                        result.message = err.message;
-                    }).then(function () {
-                        return result;
+            return utils.validateFiles(localDirFromPath, task.files).then(function () {
+                return utils.fsStat(localDirToPath).then(function () {
+                    task.buttons.splice(0);
+                    task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
+                    Promise.all(task.files.map(function (name) {
+                        var localFromPath = path.join(localDirFromPath, name);
+                        var localToPath = path.join(localDirToPath, name);
+                        var result = {name: name};
+                        return utils.fsMove(localFromPath, localToPath).then(function () {
+                            result.success = true;
+                        }, function (err) {
+                            result.success = false;
+                            result.message = err.message;
+                        }).then(function () {
+                            return result;
+                        });
+                    })).then(function (result) {
+                        task.result = result;
+                        task.buttons.push('close');
                     });
-                })).then(function (result) {
-                    task.result = result;
-                    task.buttons.push('close');
                 });
             });
         },
