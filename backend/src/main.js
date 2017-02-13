@@ -127,6 +127,10 @@ var stat = function (localPath) {
     });
 };
 
+/**
+ * @param {string} localPath
+ * @returns {Promise}
+ */
 var fsRemove = function (localPath) {
     return new Promise(function (resolve) {
         fs.remove(localPath, function (err) {
@@ -141,6 +145,11 @@ var fsRemove = function (localPath) {
     });
 };
 
+/**
+ * @param {string} fromPath
+ * @param {string} toPath
+ * @returns {Promise}
+ */
 var fsCopy = function (fromPath, toPath) {
     return new Promise(function (resolve) {
         fs.copy(fromPath, toPath, function (err) {
@@ -155,6 +164,11 @@ var fsCopy = function (fromPath, toPath) {
     });
 };
 
+/**
+ * @param {string} fromPath
+ * @param {string} toPath
+ * @returns {Promise}
+ */
 var fsMove = function (fromPath, toPath) {
     return new Promise(function (resolve) {
         fs.move(fromPath, toPath, function (err) {
@@ -169,6 +183,11 @@ var fsMove = function (fromPath, toPath) {
     });
 };
 
+/**
+ * @param {string} localDirPath
+ * @param {string[]} files
+ * @returns {*}
+ */
 var validateFiles = function (localDirPath, files) {
     return readDir(localDirPath).then(function (localFiles) {
         var found = files.every(function (name) {
@@ -334,6 +353,10 @@ var Tasks = function () {
 
 var tasks = new Tasks();
 
+/**
+ * @param {string} evalPath
+ * @returns {string}
+ */
 var safePath = function (evalPath) {
     var rootName = options.config.fs.rootName;
     var pos = evalPath.indexOf(rootName);
@@ -395,24 +418,8 @@ var actions = {
             };
         });
     },
-    remove: function (req) {
-        return tasks.remove.create(req).then(function () {
-            return {
-                success: true,
-                taskList: tasks.getList()
-            };
-        });
-    },
-    copy: function (req) {
-        return tasks.copy.create(req).then(function () {
-            return {
-                success: true,
-                taskList: tasks.getList()
-            };
-        });
-    },
-    cut: function (req) {
-        return tasks.cut.create(req).then(function () {
+    newTask: function (req) {
+        return tasks[req.query.type].create(req).then(function () {
             return {
                 success: true,
                 taskList: tasks.getList()

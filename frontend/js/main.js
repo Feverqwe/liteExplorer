@@ -209,7 +209,8 @@ define([
                                         files: JSON.stringify(files.map(function (file) {
                                             return file.name;
                                         })),
-                                        action: 'remove'
+                                        action: 'newTask',
+                                        type: 'remove'
                                     }, function (err) {
                                         if (err) {
                                             notification('removeFiles error!', err);
