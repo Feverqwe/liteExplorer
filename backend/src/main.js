@@ -225,12 +225,10 @@ var Tasks = function () {
             });
         },
         continue: function (task, req) {
-            task.inProgress = true;
             return Promise.all(task.files.map(function (name) {
                 var localPath = path.join(options.config.fs.root, task.path, name);
                 return fsRemove(localPath);
             })).then(function (result) {
-                task.inProgress = false;
                 task.result = result;
             });
         },
@@ -260,13 +258,11 @@ var Tasks = function () {
             var webDirPath = safePath(req.query.path);
             var localDirPath = path.join(options.config.fs.root, webDirPath);
             return fsStat(localDirPath).then(function () {
-                task.inProgress = true;
                 return Promise.all(task.files.map(function (name) {
                     var fromPath = path.join(options.config.fs.root, task.path, name);
                     var toPath = path.join(localDirPath, name);
                     return fsCopy(fromPath, toPath);
                 })).then(function (result) {
-                    task.inProgress = false;
                     task.result = result;
                 });
             });
@@ -297,13 +293,11 @@ var Tasks = function () {
             var webDirPath = safePath(req.query.path);
             var localDirPath = path.join(options.config.fs.root, webDirPath);
             return fsStat(localDirPath).then(function () {
-                task.inProgress = true;
                 Promise.all(task.files.map(function (name) {
                     var fromPath = path.join(options.config.fs.root, task.path, name);
                     var toPath = path.join(localDirPath, name);
                     return fsMove(fromPath, toPath);
                 })).then(function (result) {
-                    task.inProgress = false;
                     task.result = result;
                 });
             });
