@@ -100,7 +100,7 @@ var File = function (name, urlPath) {
  * @param {string} localDirPath
  * @returns {Promise}
  */
-var readDir = function (localDirPath) {
+var fsReadDir = function (localDirPath) {
     return new Promise(function (resolve, reject) {
         fs.readdir(localDirPath, function (err, files) {
             if (err) {
@@ -193,7 +193,7 @@ var fsMove = function (fromPath, toPath) {
  * @returns {*}
  */
 var validateFiles = function (localDirPath, files) {
-    return readDir(localDirPath).then(function (localFiles) {
+    return fsReadDir(localDirPath).then(function (localFiles) {
         var found = files.every(function (name) {
             return localFiles.indexOf(name) !== -1;
         });
@@ -394,7 +394,7 @@ var actions = {
     files: function (req) {
         var webDirPath = safePath(req.query.path);
         var localDirPath = path.join(options.config.fs.root, webDirPath);
-        return readDir(localDirPath).then(function (files) {
+        return fsReadDir(localDirPath).then(function (files) {
             return Promise.all(files.map(function (name) {
                 var webFilePath = path.posix.join(options.config.fs.rootName, webDirPath, name);
                 var file = new File(name, webFilePath);
@@ -408,7 +408,7 @@ var actions = {
                 });
             }));
         }, function (err) {
-            debug('readDir', err);
+            debug('fsReadDir', err);
             var webFilePath = path.posix.join(options.config.fs.rootName, safePath(req.query.path + '/..'));
             var file = new File('..', webFilePath);
             file.isDirectory = true;
