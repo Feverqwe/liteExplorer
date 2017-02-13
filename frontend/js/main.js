@@ -40,8 +40,16 @@ define([
                 err = new Error(response.body.message);
             }
             if (!err) {
-                callback(null, response.body);
+                var body = response.body;
+                if (body.taskList) {
+                    ee.trigger('setTaskList', body);
+                }
+                if (body.files) {
+                    ee.trigger('setFileList', body);
+                }
+                callback(null, body);
             } else {
+                notification('sendAction error!', err);
                 callback(err);
             }
         });
@@ -65,13 +73,10 @@ define([
             sendAction({
                 path: self.get('path') || '',
                 action: 'files'
-            }, function (err, response) {
+            }, function (err) {
                 if (err) {
-                    notification('getFiles error!', err);
                     throw err;
                 }
-
-                ee.trigger('setFileList', [response]);
 
                 var url = self.getUrl();
                 var title = document.title = getTitle();
@@ -82,9 +87,9 @@ define([
     })(pageController);
 
 
-    var taskList = new TaskList(ee);
-
     var table = new Table(config, ee);
+
+    var taskList = new TaskList(ee, sendAction, table);
 
     var getHead = function () {
         var map = {
@@ -213,7 +218,6 @@ define([
                                         type: 'remove'
                                     }, function (err) {
                                         if (err) {
-                                            notification('removeFiles error!', err);
                                             throw err;
                                         }
                                         dialog.destroy();
@@ -294,11 +298,8 @@ define([
                                     action: 'files'
                                 }, function (err, response) {
                                     if (err) {
-                                        notification('getFiles error!', err);
                                         throw err;
                                     }
-
-                                    ee.trigger('setFileList', [response]);
                                 });
                             }]
                         })

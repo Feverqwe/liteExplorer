@@ -4,10 +4,10 @@
 define([
     './dom'
 ], function (dom) {
-    var notification = function (error) {
-        var text = [].slice.call(arguments).map(function (item, i) {
+    var notification = function () {
+        var text = [].slice.call(arguments).map(function (item) {
             if (item instanceof Error) {
-                return [error.code, error.message].join(':');
+                return [item.code, item.message].join(':');
             } else {
                 return item;
             }
