@@ -29,10 +29,11 @@ var Tasks = function () {
                 files: files,
                 buttons: ['continue', 'cancel']
             });
+            return Promise.resolve();
         },
         continue: function (task, req) {
             task.buttons.splice(0);
-            var webDirPath = utils.safePath(task.fromPath);
+            var webDirPath = utils.safePath(task.path);
             var localDirPath = path.join(options.config.fs.root, webDirPath);
             return utils.validateFiles(localDirPath, task.files).then(function () {
                 return Promise.all(task.files.map(function (name) {
@@ -66,6 +67,7 @@ var Tasks = function () {
                 files: files,
                 buttons: ['paste', 'cancel']
             });
+            return Promise.resolve();
         },
         paste: function (task, req) {
             var webDirFromPath = utils.safePath(task.fromPath);
@@ -109,6 +111,7 @@ var Tasks = function () {
                 files: files,
                 buttons: ['paste', 'cancel']
             });
+            return Promise.resolve();
         },
         paste: function (task, req) {
             var webDirFromPath = utils.safePath(task.fromPath);
