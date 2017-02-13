@@ -9,6 +9,13 @@ var Tasks = function () {
     var id = 0;
     var taskList = [];
 
+    var removeTask = function (task) {
+        var pos = taskList.indexOf(task);
+        if (pos !== -1) {
+            taskList.splice(pos, 1);
+        }
+    };
+
     this.remove = {
         create: function (req) {
             var webDirPath = utils.safePath(req.query.path);
@@ -25,19 +32,17 @@ var Tasks = function () {
             });
         },
         continue: function (task, req) {
+            task.buttons.splice(0);
             return Promise.all(task.files.map(function (name) {
                 var localPath = path.join(options.config.fs.root, task.path, name);
                 return utils.fsRemove(localPath);
             })).then(function (result) {
                 task.result = result;
+                task.buttons.push('close');
             });
         },
-        cancel: function (task, req) {
-            var pos = taskList.indexOf(task);
-            if (pos !== -1) {
-                taskList.splice(pos, 1);
-            }
-        }
+        cancel: removeTask,
+        close: removeTask
     };
     this.copy = {
         create: function (req) {
@@ -58,21 +63,19 @@ var Tasks = function () {
             var webDirPath = utils.safePath(req.query.path);
             var localDirPath = path.join(options.config.fs.root, webDirPath);
             return utils.fsStat(localDirPath).then(function () {
+                task.buttons.splice(0);
                 return Promise.all(task.files.map(function (name) {
                     var fromPath = path.join(options.config.fs.root, task.path, name);
                     var toPath = path.join(localDirPath, name);
                     return utils.fsCopy(fromPath, toPath);
                 })).then(function (result) {
                     task.result = result;
+                    task.buttons.push('close');
                 });
             });
         },
-        cancel: function (task, req) {
-            var pos = taskList.indexOf(task);
-            if (pos !== -1) {
-                taskList.splice(pos, 1);
-            }
-        }
+        cancel: removeTask,
+        close: removeTask
     };
     this.cut = {
         create: function (req) {
@@ -93,21 +96,19 @@ var Tasks = function () {
             var webDirPath = utils.safePath(req.query.path);
             var localDirPath = path.join(options.config.fs.root, webDirPath);
             return utils.fsStat(localDirPath).then(function () {
+                task.buttons.splice(0);
                 Promise.all(task.files.map(function (name) {
                     var fromPath = path.join(options.config.fs.root, task.path, name);
                     var toPath = path.join(localDirPath, name);
                     return utils.fsMove(fromPath, toPath);
                 })).then(function (result) {
                     task.result = result;
+                    task.buttons.push('close');
                 });
             });
         },
-        cancel: function (task, req) {
-            var pos = taskList.indexOf(task);
-            if (pos !== -1) {
-                taskList.splice(pos, 1);
-            }
-        }
+        cancel: removeTask,
+        close: removeTask
     };
 
     this.getList = function () {
