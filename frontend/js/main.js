@@ -178,68 +178,6 @@ define([
             dialog.show();
         };
 
-        var getRemoveDialog = function () {
-            var files = table.getSelectedFiles();
-            if (!files.length) {
-                return;
-            }
-            var dialog = new Dialog();
-            dom.el(dialog.body, {
-                class: ['dialog-remove_files'],
-                append: [
-                    dom.el('span', {
-                        class: 'dialog__label',
-                        text: 'Remove files?'
-                    }),
-                    dom.el('div', {
-                        class: 'dialog__items',
-                        append: files.map(function (file) {
-                            return dom.el('div', {
-                                class: ['item'],
-                                text: file.name
-                            })
-                        })
-                    }),
-                    dom.el('div', {
-                        class: ['dialog__button_box'],
-                        append: [
-                            dom.el('a', {
-                                class: ['button'],
-                                href: '#add',
-                                text: 'Remove',
-                                on: ['click', function (e) {
-                                    e.preventDefault();
-                                    sendAction({
-                                        path: table.path,
-                                        files: JSON.stringify(files.map(function (file) {
-                                            return file.name;
-                                        })),
-                                        action: 'newTask',
-                                        type: 'remove'
-                                    }, function (err) {
-                                        if (err) {
-                                            throw err;
-                                        }
-                                        dialog.destroy();
-                                    });
-                                }]
-                            }),
-                            dom.el('a', {
-                                class: ['button'],
-                                href: '#cancel',
-                                text: 'Cancel',
-                                on: ['click', function (e) {
-                                    e.preventDefault();
-                                    dialog.destroy();
-                                }]
-                            })
-                        ]
-                    })
-                ]
-            });
-            dialog.show();
-        };
-
         var titleNode;
 
         ee.on('setTitle', function (text) {
@@ -265,24 +203,37 @@ define([
                         }),
                         dom.el('a', {
                             href: '#remove',
-                            class: ['btn', 'btn-remove'],
+                            class: ['btn', 'icon-remove'],
                             on: ['click', function (e) {
                                 e.preventDefault();
-                                getRemoveDialog();
+                                var files = table.getSelectedFiles().map(function (file) {
+                                    return file.name
+                                });
+                                files.length && sendAction({
+                                    action: 'newTask',
+                                    type: 'remove',
+                                    path: table.path,
+                                    files: JSON.stringify(files)
+                                }, function (err, response) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                });
                             }]
                         }),
                         dom.el('a', {
                             href: '#copu',
-                            class: ['btn', 'btn-copy'],
+                            class: ['btn', 'icon-copy'],
                             on: ['click', function (e) {
                                 e.preventDefault();
-                                sendAction({
+                                var files = table.getSelectedFiles().map(function (file) {
+                                    return file.name
+                                });
+                                files.length && sendAction({
                                     action: 'newTask',
                                     type: 'copy',
                                     path: table.path,
-                                    files: JSON.stringify(table.getSelectedFiles().map(function (file) {
-                                        return file.name
-                                    }))
+                                    files: JSON.stringify(files)
                                 }, function (err, response) {
                                     if (err) {
                                         throw err;
@@ -292,16 +243,17 @@ define([
                         }),
                         dom.el('a', {
                             href: '#cut',
-                            class: ['btn', 'btn-cut'],
+                            class: ['btn', 'icon-cut'],
                             on: ['click', function (e) {
                                 e.preventDefault();
-                                sendAction({
+                                var files = table.getSelectedFiles().map(function (file) {
+                                    return file.name
+                                });
+                                files.length && sendAction({
                                     action: 'newTask',
                                     type: 'cut',
                                     path: table.path,
-                                    files: JSON.stringify(table.getSelectedFiles().map(function (file) {
-                                        return file.name
-                                    }))
+                                    files: JSON.stringify(files)
                                 }, function (err, response) {
                                     if (err) {
                                         throw err;

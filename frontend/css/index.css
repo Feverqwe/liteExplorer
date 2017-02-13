@@ -47,15 +47,15 @@ body {
     background-image: url(../img/sort.svg);
 }
 
-.btn-remove {
+.icon-remove {
     background-image: url(../img/remove.svg);
 }
 
-.btn-copy {
+.icon-copy {
     background-image: url(../img/copy.svg);
 }
 
-.btn-cut {
+.icon-cut {
     background-image: url(../img/cut.svg);
 }
 
@@ -67,22 +67,9 @@ body {
 .file {
     display: flex;
     flex-direction: row;
-    flex-wrap: wrap;
     border-top: 1px solid #dddddd;
 }
 
-.taskList {
-
-}
-
-.taskList .item {
-    display: flex;
-    flex-direction: row;
-}
-
-.taskList .item .item__name {
-    flex-grow: 1;
-}
 
 .file.selected {
     background-color: #dddddd;
@@ -246,26 +233,6 @@ a.file__link.link-directory:hover:visited {
     padding: 8px 5px;
 }
 
-.dialog-remove_files {
-    width: 300px;
-}
-
-.dialog-remove_files .dialog__items {
-    margin-top: 10px;
-    max-height: 300px;
-    overflow: auto;
-}
-
-.dialog-remove_files .item {
-    display: block;
-    word-break: break-all;
-    padding: 0 5px;
-}
-
-.dialog-remove_files .dialog__items .item:nth-child(odd) {
-    background-color: #ddd;
-}
-
 .notification {
     position: fixed;
     right: 10px;
@@ -279,24 +246,40 @@ a.file__link.link-directory:hover:visited {
     text-align: center;
 }
 
-.taskList {
-
-}
-
 
 .task {
     display: flex;
     flex-direction: row;
+    height: 47px;
+    align-items: center;
+    border-top: 1px solid #dddddd;
 }
 
-.task .task__name {
-    flex-grow: 2;
+.task__icon {
+    display: block;
+    width: 40px;
+    height: 40px;
+
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 32px;
+    padding: 5px;
 }
 
-.task .task__info {
+.task__name {
+    padding: 5px;
+}
+
+.task__info {
     flex-grow: 1;
+    padding: 5px;
 }
 
-.task .task__action {
-    margin: 0 5px;
+.task__controls {
+    padding: 5px;
+}
+
+.task__btn {
+    margin: 5px;
+    line-height: 40px;
 }

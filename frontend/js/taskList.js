@@ -13,6 +13,16 @@ define([
             class: 'taskList'
         });
 
+        var map = {
+            copy: 'Copy',
+            cut: 'Cut',
+            paste: 'Paste',
+            remove: 'Remove',
+            cancel: 'Cancel',
+            close: 'Close',
+            continue: 'Continue'
+        };
+
         var itemObjList = [];
 
         var actionNode = null;
@@ -27,23 +37,25 @@ define([
                 },
                 append: [
                     dom.el('div', {
+                        class: ['task__icon', 'icon-' + task.type]
+                    }),
+                    dom.el('div', {
                         class: 'task__name',
-                        text: task.type
+                        text: map[task.type]
                     }),
                     dom.el('div', {
                         class: 'task__info',
-                        text: ''
+                        text: JSON.stringify(task)
                     }),
-                    actionNode = dom.el('div', {
-                        class: 'task__actions',
+                    actionNode = dom.el(document.createDocumentFragment(), {
                         append: task.buttons.map(function (action) {
                             return dom.el('a', {
-                                class: ['task__action', 'action-' + action],
+                                class: ['task__btn', 'btn-' + action],
                                 href: '#' + action,
                                 data: {
                                     action: action
                                 },
-                                text: action,
+                                text: map[action],
                                 on: ['click', function (e) {
                                     e.preventDefault();
                                     var params = {
