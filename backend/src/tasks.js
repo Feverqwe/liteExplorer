@@ -27,7 +27,7 @@ var Tasks = function () {
                 taskList.push({
                     type: 'remove',
                     id: ++id,
-                    path: webDirPath,
+                    path: path.posix.join(options.config.fs.rootName, webDirPath),
                     files: files,
                     buttons: ['continue', 'cancel']
                 });
@@ -36,7 +36,8 @@ var Tasks = function () {
         continue: function (task, req) {
             task.buttons.splice(0);
             return Promise.all(task.files.map(function (name) {
-                var localPath = path.join(options.config.fs.root, task.path, name);
+                var wepDirPath = utils.safePath(task.path);
+                var localPath = path.join(options.config.fs.root, wepDirPath, name);
                 var result = {name: name};
                 return utils.fsRemove(localPath).then(function () {
                     result.success = true;
@@ -63,22 +64,24 @@ var Tasks = function () {
                 taskList.push({
                     type: 'copy',
                     id: ++id,
-                    path: webDirPath,
+                    fromPath: path.posix.join(options.config.fs.rootName, webDirPath),
                     files: files,
                     buttons: ['paste', 'cancel']
                 });
             });
         },
         paste: function (task, req) {
-            var webDirPath = utils.safePath(req.query.path);
-            var localDirPath = path.join(options.config.fs.root, webDirPath);
-            return utils.fsStat(localDirPath).then(function () {
+            var webDirToPath = utils.safePath(req.query.path);
+            var localDirToPath = path.join(options.config.fs.root, webDirToPath);
+            return utils.fsStat(localDirToPath).then(function () {
                 task.buttons.splice(0);
+                task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
                 return Promise.all(task.files.map(function (name) {
-                    var fromPath = path.join(options.config.fs.root, task.path, name);
-                    var toPath = path.join(localDirPath, name);
+                    var webDirFromPath = utils.safePath(task.fromPath);
+                    var localFromPath = path.join(options.config.fs.root, webDirFromPath, name);
+                    var localToPath = path.join(localDirToPath, name);
                     var result = {name: name};
-                    return utils.fsCopy(fromPath, toPath).then(function () {
+                    return utils.fsCopy(localFromPath, localToPath).then(function () {
                         result.success = true;
                     }, function (err) {
                         result.success = false;
@@ -104,22 +107,24 @@ var Tasks = function () {
                 taskList.push({
                     type: 'cut',
                     id: ++id,
-                    path: webDirPath,
+                    fromPath: path.posix.join(options.config.fs.rootName, webDirPath),
                     files: files,
                     buttons: ['paste', 'cancel']
                 });
             });
         },
         paste: function (task, req) {
-            var webDirPath = utils.safePath(req.query.path);
-            var localDirPath = path.join(options.config.fs.root, webDirPath);
-            return utils.fsStat(localDirPath).then(function () {
+            var webDirToPath = utils.safePath(req.query.path);
+            var localDirToPath = path.join(options.config.fs.root, webDirToPath);
+            return utils.fsStat(localDirToPath).then(function () {
                 task.buttons.splice(0);
+                task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
                 Promise.all(task.files.map(function (name) {
-                    var fromPath = path.join(options.config.fs.root, task.path, name);
-                    var toPath = path.join(localDirPath, name);
+                    var webDirFromPath = utils.safePath(task.fromPath);
+                    var localFromPath = path.join(options.config.fs.root, webDirFromPath, name);
+                    var localToPath = path.join(localDirToPath, name);
                     var result = {name: name};
-                    return utils.fsMove(fromPath, toPath).then(function () {
+                    return utils.fsMove(localFromPath, localToPath).then(function () {
                         result.success = true;
                     }, function (err) {
                         result.success = false;
