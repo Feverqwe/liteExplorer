@@ -401,7 +401,7 @@ var actions = {
                     return file;
                 });
             }));
-        }).catch(function (err) {
+        }, function (err) {
             debug('fsReadDir', err);
             var webFilePath = path.posix.join(options.config.fs.rootName, safePath(req.query.path + '/..'));
             var file = new File('..', webFilePath);
