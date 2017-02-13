@@ -38,7 +38,7 @@ define([
                         class: 'task__actions',
                         append: task.buttons.map(function (action) {
                             return dom.el('a', {
-                                class: ['task__button', 'button', 'button-' + action],
+                                class: ['task__action', 'action-' + action],
                                 href: '#' + action,
                                 data: {
                                     action: action

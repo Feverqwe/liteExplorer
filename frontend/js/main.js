@@ -276,7 +276,18 @@ define([
                             class: ['btn', 'btn-copy'],
                             on: ['click', function (e) {
                                 e.preventDefault();
-
+                                sendAction({
+                                    action: 'newTask',
+                                    type: 'copy',
+                                    path: table.path,
+                                    files: JSON.stringify(table.getSelectedFiles().map(function (file) {
+                                        return file.name
+                                    }))
+                                }, function (err, response) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                });
                             }]
                         }),
                         dom.el('a', {
@@ -284,7 +295,18 @@ define([
                             class: ['btn', 'btn-cut'],
                             on: ['click', function (e) {
                                 e.preventDefault();
-
+                                sendAction({
+                                    action: 'newTask',
+                                    type: 'cut',
+                                    path: table.path,
+                                    files: JSON.stringify(table.getSelectedFiles().map(function (file) {
+                                        return file.name
+                                    }))
+                                }, function (err, response) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                });
                             }]
                         }),
                         dom.el('a', {
@@ -292,7 +314,6 @@ define([
                             class: ['btn', 'btn-refresh'],
                             on: ['click', function (e) {
                                 e.preventDefault();
-
                                 sendAction({
                                     path: table.path,
                                     action: 'files'
