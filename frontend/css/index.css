@@ -24,8 +24,8 @@ body {
 .head .panel {
     display: flex;
     flex-direction: row;
-    border-top: 1px solid #dddddd;
-    border-bottom: 1px solid #dddddd;
+    border-top: 1px solid #b0bec5;
+    border-bottom: 1px solid #b0bec5;
 }
 
 .head .btn {
@@ -40,7 +40,7 @@ body {
 }
 
 .btn:active {
-    background-color: #FFC200;
+    background-color: #cfd8dc;
 }
 
 .btn-sort {
@@ -75,12 +75,12 @@ body {
 .file {
     display: flex;
     flex-direction: row;
-    border-top: 1px solid #dddddd;
+    border-top: 1px solid #b0bec5;
 }
 
 
 .file.selected {
-    background-color: #dddddd;
+    background-color: #b0bec5;
 }
 
 a.file__link {
@@ -102,17 +102,17 @@ a.file__link.link-directory:hover:visited {
 }
 
 .file:active {
-    background-color: #FFC200;
+    background-color: #cfd8dc;
 }
 
 @media screen and (min-width:800px) {
     .file:hover {
-        background-color: #FFC200;
+        background-color: #cfd8dc;
     }
 }
 
 .file:last-child {
-    border-bottom: 1px solid #dddddd;
+    border-bottom: 1px solid #b0bec5;
 }
 
 .file__link {
@@ -204,7 +204,7 @@ a.file__link.link-directory:hover:visited {
     padding-left: 34px;
     color: #000;
     text-decoration: none;
-    border-bottom: 1px solid #dddddd;
+    border-bottom: 1px solid #b0bec5;
     background-repeat: no-repeat;
     background-position: 5px center;
     background-size: 24px;
@@ -215,18 +215,18 @@ a.file__link.link-directory:hover:visited {
 }
 
 .dialog-select_sort a.selected {
-    background-color: #dddddd;
+    background-color: #b0bec5;
     background-image: url(../img/down.svg);
 }
 
 
 .dialog-select_sort a.reverse {
-    background-color: #dddddd;
+    background-color: #b0bec5;
     background-image: url(../img/up.svg);
 }
 
 .dialog-select_sort a:hover {
-    background-color: #FFC200;
+    background-color: #cfd8dc;
 }
 
 .dialog-select_sort .radio-wrapper {
@@ -260,7 +260,7 @@ a.file__link.link-directory:hover:visited {
     flex-direction: row;
     min-height: 47px;
     align-items: center;
-    border-top: 1px solid #dddddd;
+    border-top: 1px solid #b0bec5;
 }
 
 .task__icon {
