@@ -310,5 +310,5 @@ a.file__link.link-directory:hover:visited {
 }
 
 .file_list .item:nth-child(odd) {
-    background-color: #ddd;
+    background-color: #cfd8dc;
 }
