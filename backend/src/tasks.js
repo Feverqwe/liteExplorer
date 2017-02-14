@@ -26,7 +26,7 @@ var Tasks = function () {
                 id: ++id,
                 path: path.posix.join(options.config.fs.rootName, webDirPath),
                 files: files,
-                buttons: ['continue', 'cancel']
+                buttons: ['cancel', 'continue']
             });
         },
         continue: function (task, req) {
@@ -63,7 +63,7 @@ var Tasks = function () {
                 id: ++id,
                 fromPath: path.posix.join(options.config.fs.rootName, webDirPath),
                 files: files,
-                buttons: ['paste', 'cancel']
+                buttons: ['cancel', 'paste']
             });
         },
         paste: function (task, req) {
@@ -106,7 +106,7 @@ var Tasks = function () {
                 id: ++id,
                 fromPath: path.posix.join(options.config.fs.rootName, webDirPath),
                 files: files,
-                buttons: ['paste', 'cancel']
+                buttons: ['cancel', 'paste']
             });
         },
         paste: function (task, req) {
