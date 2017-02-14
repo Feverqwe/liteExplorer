@@ -226,22 +226,6 @@ define([
                 }
             });
         };
-        this.removeFileByName = function (name) {
-            var itemObj = null;
-            itemObjList.some(function (_itemObj) {
-                if (_itemObj.file.name === name) {
-                    itemObj = _itemObj;
-                    return true;
-                }
-            });
-            if (itemObj && !itemObj.remove) {
-                var pos = itemObjList.indexOf(itemObj);
-                if (pos !== -1) {
-                    itemObj.node.parentNode.removeChild(itemObj.node);
-                    itemObjList.splice(pos, 1);
-                }
-            }
-        };
         this.node = tableNode;
     };
     return Table;
