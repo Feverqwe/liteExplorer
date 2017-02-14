@@ -294,6 +294,10 @@ a.file__link.link-directory:hover:visited {
     line-height: 40px;
 }
 
+.dialog-rename {
+    width: 300px;
+}
+
 .file_list {
     max-height: 100px;
     overflow: auto;
