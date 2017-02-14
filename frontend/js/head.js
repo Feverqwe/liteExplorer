@@ -61,7 +61,7 @@ define([
             dialog.show();
         };
 
-        var getSortDialog = function (callback) {
+        var getSortDialog = function () {
             var map = {
                 name: 'Name',
                 size: 'Size',
@@ -113,8 +113,16 @@ define([
                         }),
                         on: ['click', function (e) {
                             e.preventDefault();
-                            callback();
                             dialog.destroy();
+                            var type = e.target.dataset.type;
+                            if (type) {
+                                var folder = table.path;
+                                if (globalNode.checked) {
+                                    folder = null;
+                                    delete config.sortFolder[table.path];
+                                }
+                                table.changeSort(type, folder);
+                            }
                         }]
                     }),
                     dom.el('div', {
@@ -163,17 +171,7 @@ define([
                 class: ['btn', 'btn-sort'],
                 on: ['click', function (e) {
                     e.preventDefault();
-                    getSortDialog(function () {
-                        var type = e.target.dataset.type;
-                        if (type) {
-                            var folder = table.path;
-                            if (globalNode.checked) {
-                                folder = null;
-                                delete config.sortFolder[table.path];
-                            }
-                            table.changeSort(type, folder);
-                        }
-                    });
+                    getSortDialog();
                 }]
             });
         };
