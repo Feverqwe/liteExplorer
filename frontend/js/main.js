@@ -178,7 +178,7 @@ define([
             dialog.show();
         };
 
-        var getRenameDialog = function (file) {
+        var getNameDialog = function (name, callback) {
             var dialog = new Dialog();
             dom.el(dialog.body, {
                 class: ['dialog-rename'],
@@ -190,7 +190,7 @@ define([
                     dialog.addInput(dom.el('input', {
                         type: 'text',
                         name: 'name',
-                        value: file
+                        value: name
                     })),
                     dom.el('div', {
                         class: 'dialog__button_box',
@@ -203,16 +203,7 @@ define([
                                     e.preventDefault();
                                     var values = dialog.getValues();
 
-                                    sendAction({
-                                        action: 'rename',
-                                        path: table.path,
-                                        file: file,
-                                        name: values.name
-                                    }, function (err, response) {
-                                        if (err) {
-                                            throw err;
-                                        }
-                                    });
+                                    callback(values.name);
 
                                     dialog.destroy();
                                 }]
@@ -324,9 +315,37 @@ define([
                                 var files = table.getSelectedFiles().map(function (file) {
                                     return file.name
                                 });
-                                if (files.length) {
-                                    getRenameDialog(files[0]);
-                                }
+
+                                files.length && getNameDialog(files[0], function (name) {
+                                    sendAction({
+                                        action: 'rename',
+                                        path: table.path,
+                                        file: files[0],
+                                        name: name
+                                    }, function (err, response) {
+                                        if (err) {
+                                            throw err;
+                                        }
+                                    });
+                                });
+                            }]
+                        }),
+                        dom.el('a', {
+                            href: '#newFolder',
+                            class: ['btn', 'icon-new-folder'],
+                            on: ['click', function (e) {
+                                e.preventDefault();
+                                getNameDialog('New folder', function (name) {
+                                    sendAction({
+                                        action: 'newFolder',
+                                        path: table.path,
+                                        name: name
+                                    }, function (err, response) {
+                                        if (err) {
+                                            throw err;
+                                        }
+                                    });
+                                });
                             }]
                         }),
                         dom.el('a', {

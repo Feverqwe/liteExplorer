@@ -63,6 +63,10 @@ body {
     background-image: url(../img/rename.svg);
 }
 
+.icon-new-folder {
+    background-image: url(../img/new-folder.svg);
+}
+
 .btn.btn-refresh {
     background-image: url(../img/refresh.svg);
     background-size: 31px;
@@ -272,6 +276,7 @@ a.file__link.link-directory:hover:visited {
 
 .task__name {
     padding: 5px;
+    min-width: 60px;
 }
 
 .task__info {
@@ -287,4 +292,19 @@ a.file__link.link-directory:hover:visited {
 .task__btn {
     margin: 5px;
     line-height: 40px;
+}
+
+.file_list {
+    max-height: 100px;
+    overflow: auto;
+}
+
+.file_list .item {
+    display: block;
+    word-break: break-all;
+    padding: 0 5px;
+}
+
+.file_list .item:nth-child(odd) {
+    background-color: #ddd;
 }

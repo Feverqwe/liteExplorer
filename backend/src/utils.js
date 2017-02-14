@@ -90,6 +90,18 @@ utils.fsMove = function (fromPath, toPath) {
     });
 };
 
+utils.fsEnsureDir = function (path) {
+    return new Promise(function (resolve, reject) {
+        fs.ensureDir(path, function (err) {
+            if (err) {
+                reject(err);
+            } else {
+                resolve();
+            }
+        });
+    });
+};
+
 /**
  * @param {string} localDirPath
  * @param {string[]} files

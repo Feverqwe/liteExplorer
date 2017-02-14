@@ -96,6 +96,20 @@ var actions = {
             return result;
         });
     },
+    newFolder: function (req) {
+        var webDirPath = utils.safePath(req.query.path);
+        var name = req.query.name;
+        var localPath = path.join(options.config.fs.root, webDirPath, name);
+        var result = {name: name};
+        return utils.fsEnsureDir(localPath).then(function () {
+            result.success = true;
+        }, function (err) {
+            result.success = false;
+            result.message = err.message;
+        }).then(function () {
+            return result;
+        });
+    },
     newTask: function (req) {
         return new Promise(function (resolve) {
            resolve(tasks[req.query.type].create(req));

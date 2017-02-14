@@ -32,21 +32,26 @@ define([
 
             var getTaskInfo = function (task) {
                 if (task.type === 'remove') {
-                    return [task.path, task.files].map(JSON.stringify).join(' ')
+                    return dom.el('div', {
+                        class: 'file_list',
+                        append: task.files.map(function (file) {
+                            return dom.el('div', {
+                                class: 'item',
+                                text: task.path + '/' + file
+                            });
+                        })
+                    });
                 } else
-                if (task.type === 'copy') {
-                    var path = [task.fromPath];
-                    if (task.toPath) {
-                        path.push(task.toPath);
-                    }
-                    return [path.map(JSON.stringify).join('>'), JSON.stringify(task.files)].join(' ')
-                } else
-                if (task.type === 'cut') {
-                    var path = [task.fromPath];
-                    if (task.toPath) {
-                        path.push(task.toPath);
-                    }
-                    return [path.map(JSON.stringify).join('>'), JSON.stringify(task.files)].join(' ')
+                if (task.type === 'copy' || task.type === 'cut') {
+                    return dom.el('div', {
+                        class: 'file_list',
+                        append: task.files.map(function (file) {
+                            return dom.el('div', {
+                                class: 'item',
+                                text: [task.fromPath + '/' + file, task.toPath || '...'].join(' > ')
+                            });
+                        })
+                    });
                 }
             };
 
