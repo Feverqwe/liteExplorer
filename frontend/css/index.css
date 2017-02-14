@@ -288,3 +288,7 @@ a.file__link.link-directory:hover:visited {
     margin: 5px;
     line-height: 40px;
 }
+
+.dialog-rename {
+    width: 300px;
+}

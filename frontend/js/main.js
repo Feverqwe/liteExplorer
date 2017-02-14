@@ -180,6 +180,7 @@ define([
 
         var getRenameDialog = function (file) {
             var dialog = new Dialog();
+            var saveNode;
             dom.el(dialog.body, {
                 class: ['dialog-rename'],
                 append: [
@@ -190,12 +191,17 @@ define([
                     dialog.addInput(dom.el('input', {
                         type: 'text',
                         name: 'name',
-                        value: file
+                        value: file,
+                        on: ['keypress', function (e) {
+                            if (e.keyCode === 13) {
+                                saveNode.dispatchEvent(new MouseEvent('click', {cancelable: true}));
+                            }
+                        }]
                     })),
                     dom.el('div', {
                         class: 'dialog__button_box',
                         append: [
-                            dom.el('a', {
+                            saveNode = dom.el('a', {
                                 class: ['button', 'button-save'],
                                 href: '#save',
                                 text: 'Save',
