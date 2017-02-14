@@ -246,6 +246,21 @@ define([
                     class: 'panel',
                     append: [
                         dom.el('a', {
+                            href: '#refresh',
+                            class: ['btn', 'btn-refresh'],
+                            on: ['click', function (e) {
+                                e.preventDefault();
+                                sendAction({
+                                    path: table.path,
+                                    action: 'files'
+                                }, function (err, response) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                });
+                            }]
+                        }),
+                        dom.el('a', {
                             href: '#sort',
                             class: ['btn', 'btn-sort'],
                             on: ['click', function (e) {
@@ -254,23 +269,20 @@ define([
                             }]
                         }),
                         dom.el('a', {
-                            href: '#remove',
-                            class: ['btn', 'icon-remove'],
+                            href: '#newFolder',
+                            class: ['btn', 'icon-new-folder'],
                             on: ['click', function (e) {
                                 e.preventDefault();
-                                var files = table.getSelectedFiles().map(function (file) {
-                                    return file.name
-                                });
-                                files.length && sendAction({
-                                    action: 'newTask',
-                                    type: 'remove',
-                                    path: table.path,
-                                    files: JSON.stringify(files)
-                                }, function (err, response) {
-                                    if (err) {
-                                        throw err;
-                                    }
-                                    table.resetSelect();
+                                getNameDialog('New folder', function (name) {
+                                    sendAction({
+                                        action: 'newFolder',
+                                        path: table.path,
+                                        name: name
+                                    }, function (err, response) {
+                                        if (err) {
+                                            throw err;
+                                        }
+                                    });
                                 });
                             }]
                         }),
@@ -285,27 +297,6 @@ define([
                                 files.length && sendAction({
                                     action: 'newTask',
                                     type: 'copy',
-                                    path: table.path,
-                                    files: JSON.stringify(files)
-                                }, function (err, response) {
-                                    if (err) {
-                                        throw err;
-                                    }
-                                    table.resetSelect();
-                                });
-                            }]
-                        }),
-                        dom.el('a', {
-                            href: '#cut',
-                            class: ['btn', 'icon-cut'],
-                            on: ['click', function (e) {
-                                e.preventDefault();
-                                var files = table.getSelectedFiles().map(function (file) {
-                                    return file.name
-                                });
-                                files.length && sendAction({
-                                    action: 'newTask',
-                                    type: 'cut',
                                     path: table.path,
                                     files: JSON.stringify(files)
                                 }, function (err, response) {
@@ -341,35 +332,44 @@ define([
                             }]
                         }),
                         dom.el('a', {
-                            href: '#newFolder',
-                            class: ['btn', 'icon-new-folder'],
+                            href: '#cut',
+                            class: ['btn', 'icon-cut'],
                             on: ['click', function (e) {
                                 e.preventDefault();
-                                getNameDialog('New folder', function (name) {
-                                    sendAction({
-                                        action: 'newFolder',
-                                        path: table.path,
-                                        name: name
-                                    }, function (err, response) {
-                                        if (err) {
-                                            throw err;
-                                        }
-                                    });
+                                var files = table.getSelectedFiles().map(function (file) {
+                                    return file.name
                                 });
-                            }]
-                        }),
-                        dom.el('a', {
-                            href: '#refresh',
-                            class: ['btn', 'btn-refresh'],
-                            on: ['click', function (e) {
-                                e.preventDefault();
-                                sendAction({
+                                files.length && sendAction({
+                                    action: 'newTask',
+                                    type: 'cut',
                                     path: table.path,
-                                    action: 'files'
+                                    files: JSON.stringify(files)
                                 }, function (err, response) {
                                     if (err) {
                                         throw err;
                                     }
+                                    table.resetSelect();
+                                });
+                            }]
+                        }),
+                        dom.el('a', {
+                            href: '#remove',
+                            class: ['btn', 'icon-remove'],
+                            on: ['click', function (e) {
+                                e.preventDefault();
+                                var files = table.getSelectedFiles().map(function (file) {
+                                    return file.name
+                                });
+                                files.length && sendAction({
+                                    action: 'newTask',
+                                    type: 'remove',
+                                    path: table.path,
+                                    files: JSON.stringify(files)
+                                }, function (err, response) {
+                                    if (err) {
+                                        throw err;
+                                    }
+                                    table.resetSelect();
                                 });
                             }]
                         })
