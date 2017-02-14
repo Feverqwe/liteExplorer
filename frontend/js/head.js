@@ -151,6 +151,7 @@ define([
             return dom.el('a', {
                 href: '#refresh',
                 class: ['btn', 'btn-refresh'],
+                title: 'Refresh',
                 on: ['click', function (e) {
                     e.preventDefault();
                     sendAction({
@@ -169,6 +170,7 @@ define([
             return dom.el('a', {
                 href: '#sort',
                 class: ['btn', 'btn-sort'],
+                title: 'Sort',
                 on: ['click', function (e) {
                     e.preventDefault();
                     getSortDialog();
@@ -180,6 +182,7 @@ define([
             return dom.el('a', {
                 href: '#newFolder',
                 class: ['btn', 'icon-new-folder'],
+                title: 'New folder',
                 on: ['click', function (e) {
                     e.preventDefault();
                     getNameDialog('New folder', function (name) {
@@ -201,6 +204,7 @@ define([
             return dom.el('a', {
                 href: '#copy',
                 class: ['btn', 'icon-copy'],
+                title: 'Copy',
                 on: ['click', function (e) {
                     e.preventDefault();
                     var files = table.getSelectedFiles().map(function (file) {
@@ -225,6 +229,7 @@ define([
             return dom.el('a', {
                 href: '#rename',
                 class: ['btn', 'icon-rename'],
+                title: 'Rename',
                 on: ['click', function (e) {
                     e.preventDefault();
                     var files = table.getSelectedFiles().map(function (file) {
@@ -252,6 +257,7 @@ define([
             return dom.el('a', {
                 href: '#cut',
                 class: ['btn', 'icon-cut'],
+                title: 'Cut',
                 on: ['click', function (e) {
                     e.preventDefault();
                     var files = table.getSelectedFiles().map(function (file) {
@@ -276,6 +282,7 @@ define([
             return dom.el('a', {
                 href: '#remove',
                 class: ['btn', 'icon-remove'],
+                title: 'Remove',
                 on: ['click', function (e) {
                     e.preventDefault();
                     var files = table.getSelectedFiles().map(function (file) {
