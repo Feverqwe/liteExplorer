@@ -121,7 +121,7 @@ define([
                                     folder = null;
                                     delete config.sortFolder[table.path];
                                 }
-                                ee.trigger('changeSort', [type, folder]);
+                                table.changeSort(type, folder);
                             }
                         }]
                     }),

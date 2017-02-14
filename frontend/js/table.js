@@ -181,13 +181,13 @@ define([
             itemObjList.splice(0);
         });
 
-        ee.on('setFileList', function (response) {
+        this.setFileList = function (response) {
             self.path = response.path;
             ee.trigger('setTitle', [self.path.split('/').slice(-1)[0]]);
             setFiles(response.files);
-        });
+        };
 
-        ee.on('changeSort', function (type, path) {
+        this.changeSort = function (type, path) {
             var sortObj;
             if (path) {
                 sortObj = config.sortFolder[path];
@@ -210,7 +210,7 @@ define([
             localStorage.config = JSON.stringify(config);
 
             sortInsertList(tableNode, sortItemObjList(itemObjList));
-        });
+        };
 
         this.path = null;
         this.getSelectedFiles = function () {

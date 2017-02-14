@@ -43,10 +43,10 @@ define([
             if (!err) {
                 var body = response.body;
                 if (body.files) {
-                    ee.trigger('setFileList', [body]);
+                    table.setFileList(body);
                 }
                 if (body.taskList) {
-                    ee.trigger('setTaskList', [body]);
+                    taskList.setTaskList(body);
                 }
                 callback(null, body);
             } else {

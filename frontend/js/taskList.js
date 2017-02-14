@@ -118,9 +118,9 @@ define([
             });
         };
 
-        ee.on('setTaskList', function (response) {
+        this.setTaskList = function (response) {
             setTasks(response.taskList);
-        });
+        };
 
         this.node = tableNode;
     };
