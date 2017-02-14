@@ -15,7 +15,6 @@ var Tasks = function () {
         if (pos !== -1) {
             taskList.splice(pos, 1);
         }
-        return Promise.resolve();
     };
 
     this.remove = {
@@ -29,7 +28,6 @@ var Tasks = function () {
                 files: files,
                 buttons: ['continue', 'cancel']
             });
-            return Promise.resolve();
         },
         continue: function (task, req) {
             task.buttons.splice(0);
@@ -67,7 +65,6 @@ var Tasks = function () {
                 files: files,
                 buttons: ['paste', 'cancel']
             });
-            return Promise.resolve();
         },
         paste: function (task, req) {
             var webDirFromPath = utils.safePath(task.fromPath);
@@ -111,7 +108,6 @@ var Tasks = function () {
                 files: files,
                 buttons: ['paste', 'cancel']
             });
-            return Promise.resolve();
         },
         paste: function (task, req) {
             var webDirFromPath = utils.safePath(task.fromPath);
@@ -181,8 +177,6 @@ var Tasks = function () {
         }).then(function () {
             task.lock = false;
         });
-
-        return Promise.resolve();
     };
 };
 

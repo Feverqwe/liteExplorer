@@ -81,7 +81,9 @@ var actions = {
         });
     },
     newTask: function (req) {
-        return tasks[req.query.type].create(req).then(function () {
+        return new Promise(function (resolve) {
+           resolve(tasks[req.query.type].create(req));
+        }).then(function () {
             return {
                 success: true,
                 taskList: tasks.getList()
@@ -89,7 +91,9 @@ var actions = {
         });
     },
     task: function (req) {
-        return tasks.onTask(req).then(function () {
+        return new Promise(function (resolve) {
+            resolve(tasks.onTask(req));
+        }).then(function () {
             return {
                 success: true,
                 taskList: tasks.getList()
