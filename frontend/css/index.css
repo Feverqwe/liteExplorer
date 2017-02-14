@@ -59,6 +59,10 @@ body {
     background-image: url(../img/cut.svg);
 }
 
+.icon-rename {
+    background-image: url(../img/rename.svg);
+}
+
 .btn.btn-refresh {
     background-image: url(../img/refresh.svg);
     background-size: 31px;

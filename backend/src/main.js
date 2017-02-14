@@ -80,6 +80,22 @@ var actions = {
             };
         });
     },
+    rename: function (req) {
+        var webDirPath = utils.safePath(req.query.path);
+        var oldName = req.query.file;
+        var newName = req.query.name;
+        var localFromPath = path.join(options.config.fs.root, webDirPath, oldName);
+        var localToPath = path.join(options.config.fs.root, webDirPath, newName);
+        var result = {name: oldName};
+        return utils.fsMove(localFromPath, localToPath).then(function () {
+            result.success = true;
+        }, function (err) {
+            result.success = false;
+            result.message = err.message;
+        }).then(function () {
+            return result;
+        });
+    },
     newTask: function (req) {
         return new Promise(function (resolve) {
            resolve(tasks[req.query.type].create(req));

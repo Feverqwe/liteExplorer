@@ -178,6 +178,61 @@ define([
             dialog.show();
         };
 
+        var getRenameDialog = function (file) {
+            var dialog = new Dialog();
+            dom.el(dialog.body, {
+                class: ['dialog-rename'],
+                append: [
+                    dom.el('span', {
+                        class: 'dialog__label',
+                        text: 'Name'
+                    }),
+                    dialog.addInput(dom.el('input', {
+                        type: 'text',
+                        name: 'name',
+                        value: file
+                    })),
+                    dom.el('div', {
+                        class: 'dialog__button_box',
+                        append: [
+                            dom.el('a', {
+                                class: ['button', 'button-save'],
+                                href: '#save',
+                                text: 'Save',
+                                on: ['click', function (e) {
+                                    e.preventDefault();
+                                    var values = dialog.getValues();
+
+                                    sendAction({
+                                        action: 'rename',
+                                        path: table.path,
+                                        file: file,
+                                        name: values.name
+                                    }, function (err, response) {
+                                        if (err) {
+                                            throw err;
+                                        }
+                                    });
+
+                                    dialog.destroy();
+                                }]
+                            }),
+                            dom.el('a', {
+                                class: ['button', 'button-cancel'],
+                                href: '#cancel',
+                                text: 'Cancel',
+                                on: ['click', function (e) {
+                                    e.preventDefault();
+                                    dialog.destroy();
+                                }]
+                            })
+                        ]
+                    })
+                ]
+            });
+            dialog.show();
+        };
+
         var titleNode;
 
         ee.on('setTitle', function (text) {
@@ -259,6 +314,19 @@ define([
                                         throw err;
                                     }
                                 });
+                            }]
+                        }),
+                        dom.el('a', {
+                            href: '#rename',
+                            class: ['btn', 'icon-rename'],
+                            on: ['click', function (e) {
+                                e.preventDefault();
+                                var files = table.getSelectedFiles().map(function (file) {
+                                    return file.name
+                                });
+                                if (files.length) {
+                                    getRenameDialog(files[0]);
+                                }
                             }]
                         }),
                         dom.el('a', {
