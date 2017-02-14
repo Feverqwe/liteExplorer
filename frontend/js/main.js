@@ -71,6 +71,8 @@ define([
         pageController.applyUrl = function () {
             var self = pageController;
 
+            table.loadingFileList();
+
             sendAction({
                 path: self.get('path') || '',
                 action: 'files'

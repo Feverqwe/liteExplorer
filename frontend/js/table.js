@@ -176,17 +176,16 @@ define([
             sortInsertList(tableNode, sortItemObjList(itemObjList));
         };
 
-        ee.on('loadingFileList', function () {
+        this.path = null;
+        this.loadingFileList = function () {
             tableNode.textContent = '';
             itemObjList.splice(0);
-        });
-
+        };
         this.setFileList = function (response) {
             self.path = response.path;
             ee.trigger('setTitle', [self.path.split('/').slice(-1)[0]]);
             setFiles(response.files);
         };
-
         this.changeSort = function (type, path) {
             var sortObj;
             if (path) {
@@ -211,8 +210,6 @@ define([
 
             sortInsertList(tableNode, sortItemObjList(itemObjList));
         };
-
-        this.path = null;
         this.getSelectedFiles = function () {
             var files = [];
             itemObjList.forEach(function (itemObj) {
