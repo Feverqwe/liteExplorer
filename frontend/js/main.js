@@ -41,11 +41,11 @@ define([
             }
             if (!err) {
                 var body = response.body;
-                if (body.taskList) {
-                    ee.trigger('setTaskList', [body]);
-                }
                 if (body.files) {
                     ee.trigger('setFileList', [body]);
+                }
+                if (body.taskList) {
+                    ee.trigger('setTaskList', [body]);
                 }
                 callback(null, body);
             } else {
@@ -270,6 +270,7 @@ define([
                                     if (err) {
                                         throw err;
                                     }
+                                    table.resetSelect();
                                 });
                             }]
                         }),
@@ -290,6 +291,7 @@ define([
                                     if (err) {
                                         throw err;
                                     }
+                                    table.resetSelect();
                                 });
                             }]
                         }),
@@ -310,6 +312,7 @@ define([
                                     if (err) {
                                         throw err;
                                     }
+                                    table.resetSelect();
                                 });
                             }]
                         }),
@@ -332,6 +335,7 @@ define([
                                         if (err) {
                                             throw err;
                                         }
+                                        table.resetSelect();
                                     });
                                 });
                             }]

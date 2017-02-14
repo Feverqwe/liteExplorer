@@ -12,10 +12,21 @@ define([
 
         var itemObjList = [];
 
+        var setSelect = function (state) {
+            this.selected = state;
+            this.selectNode.checked = state;
+            if (state) {
+                this.node.classList.add('selected');
+            } else {
+                this.node.classList.remove('selected');
+            }
+        };
+
         var getFile = function (file, index) {
             var itemObj = {};
             itemObj.file = file;
             itemObj.selected = false;
+            itemObj.setSelect = setSelect;
 
             var ext = '';
             var date = utils.getDateStr(file.mtime);
@@ -34,16 +45,11 @@ define([
                 iconClassList.push('icon-file', 'icon-' + ext);
                 target = '_blank';
             }
-            var selectBox = dom.el('input', {
+            itemObj.selectNode = dom.el('input', {
                 class: 'file__select',
                 type: 'checkbox',
                 on: ['change', function () {
-                    itemObj.selected = this.checked;
-                    if (itemObj.selected) {
-                        node.classList.add('selected');
-                    } else {
-                        node.classList.remove('selected');
-                    }
+                    itemObj.setSelect(this.checked);
                 }]
             });
             var node = dom.el('div', {
@@ -55,12 +61,11 @@ define([
                     dom.el('div', {
                         class: iconClassList,
                         append: [
-                            selectBox
+                            itemObj.selectNode
                         ],
                         on: ['click', function (e) {
-                            if (e.target !== selectBox) {
-                                selectBox.checked = !selectBox.checked;
-                                selectBox.dispatchEvent(new CustomEvent('change'));
+                            if (e.target !== itemObj.selectNode) {
+                                itemObj.setSelect(!itemObj.selectNode.checked);
                             }
                         }]
                     }),
@@ -216,6 +221,13 @@ define([
                 }
             });
             return files;
+        };
+        this.resetSelect = function () {
+            itemObjList.forEach(function (itemObj) {
+                if (itemObj.selected) {
+                    itemObj.setSelect(false);
+                }
+            });
         };
         this.removeFileByName = function (name) {
             var itemObj = null;

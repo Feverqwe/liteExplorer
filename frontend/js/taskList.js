@@ -48,7 +48,7 @@ define([
                         append: task.files.map(function (file) {
                             return dom.el('div', {
                                 class: 'item',
-                                text: [task.fromPath + '/' + file, task.toPath || '...'].join(' > ')
+                                text: [task.fromPath, task.toPath || table.path].join(' > ') + ' ' + file
                             });
                         })
                     });
