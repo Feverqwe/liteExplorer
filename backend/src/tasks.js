@@ -5,7 +5,7 @@ var debug = require('debug')('tasks');
 var path = require('path');
 var utils = require('./utils');
 
-var Tasks = function () {
+var Tasks = function (options) {
     var self = this;
     var id = 0;
     var taskList = [];
@@ -19,7 +19,7 @@ var Tasks = function () {
 
     this.remove = {
         create: function (req) {
-            var webDirPath = utils.safePath(req.query.path);
+            var webDirPath = utils.safePath(options, req.query.path);
             var files = JSON.parse(req.query.files);
             taskList.push({
                 type: 'remove',
@@ -31,7 +31,7 @@ var Tasks = function () {
         },
         continue: function (task, req) {
             task.buttons.splice(0);
-            var webDirPath = utils.safePath(task.path);
+            var webDirPath = utils.safePath(options, task.path);
             var localDirPath = path.join(options.config.fs.root, webDirPath);
             return utils.validateFiles(localDirPath, task.files).then(function () {
                 return Promise.all(task.files.map(function (name) {
@@ -56,7 +56,7 @@ var Tasks = function () {
     };
     this.copy = {
         create: function (req) {
-            var webDirPath = utils.safePath(req.query.path);
+            var webDirPath = utils.safePath(options, req.query.path);
             var files = JSON.parse(req.query.files);
             taskList.push({
                 type: 'copy',
@@ -67,8 +67,8 @@ var Tasks = function () {
             });
         },
         paste: function (task, req) {
-            var webDirFromPath = utils.safePath(task.fromPath);
-            var webDirToPath = utils.safePath(req.query.path);
+            var webDirFromPath = utils.safePath(options, task.fromPath);
+            var webDirToPath = utils.safePath(options, req.query.path);
             var localDirFromPath = path.join(options.config.fs.root, webDirFromPath);
             var localDirToPath = path.join(options.config.fs.root, webDirToPath);
             return utils.validateFiles(localDirFromPath, task.files).then(function () {
@@ -99,7 +99,7 @@ var Tasks = function () {
     };
     this.cut = {
         create: function (req) {
-            var webDirPath = utils.safePath(req.query.path);
+            var webDirPath = utils.safePath(options, req.query.path);
             var files = JSON.parse(req.query.files);
             taskList.push({
                 type: 'cut',
@@ -110,8 +110,8 @@ var Tasks = function () {
             });
         },
         paste: function (task, req) {
-            var webDirFromPath = utils.safePath(task.fromPath);
-            var webDirToPath = utils.safePath(req.query.path);
+            var webDirFromPath = utils.safePath(options, task.fromPath);
+            var webDirToPath = utils.safePath(options, req.query.path);
             var localDirFromPath = path.join(options.config.fs.root, webDirFromPath);
             var localDirToPath = path.join(options.config.fs.root, webDirToPath);
             return utils.validateFiles(localDirFromPath, task.files).then(function () {

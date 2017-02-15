@@ -8,11 +8,10 @@ var morgan = require('morgan');
 var compression = require('compression');
 var path = require('path');
 var utils = require('./utils');
-var File = require('./file');
+var FileList = require('./fileList');
 var Tasks = require('./tasks');
-var tasks = new Tasks();
 
-global.options = {
+var options = {
     server: null,
     expressApp: null,
     config: {
@@ -30,6 +29,9 @@ global.options = {
         }
     }
 };
+
+options.tasks = new Tasks(options);
+options.fileList = new FileList(options);
 
 options.expressApp = express();
 
@@ -49,39 +51,17 @@ options.expressApp.use('/fs/api', ipfilter(options.config.fs.ipFilter, {
 }));
 
 var actions = {
-    files: function (req) {
-        var webDirPath = utils.safePath(req.query.path);
-        var localDirPath = path.join(options.config.fs.root, webDirPath);
-        return utils.fsReadDir(localDirPath).then(function (files) {
-            return Promise.all(files.map(function (name) {
-                var webFilePath = path.posix.join(options.config.fs.rootName, webDirPath, name);
-                var file = new File(name, webFilePath);
-                var localFilePath = path.join(localDirPath, name);
-                return utils.fsStat(localFilePath).then(function (stats) {
-                    file.setStats(stats);
-                }, function (err) {
-                    debug('getStats error', webFilePath, err);
-                }).then(function () {
-                    return file;
-                });
-            }));
-        }, function (err) {
-            debug('fsReadDir', err);
-            var webFilePath = path.posix.join(options.config.fs.rootName, utils.safePath(req.query.path + '/..'));
-            var file = new File('..', webFilePath);
-            file.isDirectory = true;
-            return [file];
-        }).then(function (files) {
+    fileList: function (req) {
+        return options.fileList.getList(req).then(function (fileList) {
             return {
                 success: true,
-                files: files,
-                path: path.posix.join(options.config.fs.rootName, webDirPath),
-                taskList: tasks.getList()
+                fileList: fileList,
+                taskList: options.tasks.getList()
             };
         });
     },
     rename: function (req) {
-        var webDirPath = utils.safePath(req.query.path);
+        var webDirPath = utils.safePath(options, req.query.path);
         var oldName = req.query.file;
         var newName = req.query.name;
         var localFromPath = path.join(options.config.fs.root, webDirPath, oldName);
@@ -97,7 +77,7 @@ var actions = {
         });
     },
     newFolder: function (req) {
-        var webDirPath = utils.safePath(req.query.path);
+        var webDirPath = utils.safePath(options, req.query.path);
         var name = req.query.name;
         var localPath = path.join(options.config.fs.root, webDirPath, name);
         var result = {name: name};
@@ -112,21 +92,21 @@ var actions = {
     },
     newTask: function (req) {
         return new Promise(function (resolve) {
-           resolve(tasks[req.query.type].create(req));
+           resolve(options.tasks[req.query.type].create(req));
         }).then(function () {
             return {
                 success: true,
-                taskList: tasks.getList()
+                taskList: options.tasks.getList()
             };
         });
     },
     task: function (req) {
         return new Promise(function (resolve) {
-            resolve(tasks.onTask(req));
+            resolve(options.tasks.onTask(req));
         }).then(function () {
             return {
                 success: true,
-                taskList: tasks.getList()
+                taskList: options.tasks.getList()
             };
         });
     }

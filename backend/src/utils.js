@@ -15,9 +15,6 @@ utils.fsReadDir = function (localDirPath) {
             if (err) {
                 reject(err);
             } else {
-                if (localDirPath !== options.config.fs.root) {
-                    files.push('..');
-                }
                 resolve(files);
             }
         });
@@ -123,7 +120,7 @@ utils.validateFiles = function (localDirPath, files) {
  * @param {string} evalPath
  * @returns {string}
  */
-utils.safePath = function (evalPath) {
+utils.safePath = function (options, evalPath) {
     var rootName = options.config.fs.rootName;
     var pos = evalPath.indexOf(rootName);
     if (pos !== -1) {

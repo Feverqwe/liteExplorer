@@ -1,7 +1,10 @@
 /**
- * Created by Anton on 13.02.2017.
+ * Created by Anton on 15.02.2017.
  */
+"use strict";
+var debug = require('debug')('fileList');
 var path = require('path');
+var utils = require('./utils');
 
 var File = function (name, urlPath) {
     var self = this;
@@ -60,4 +63,39 @@ var File = function (name, urlPath) {
         }
     };
 };
-module.exports = File;
+
+var FileList = function (options) {
+    this.getList = function (req) {
+        var webDirPath = utils.safePath(options, req.query.path);
+        var localDirPath = path.join(options.config.fs.root, webDirPath);
+        return utils.fsReadDir(localDirPath).then(function (files) {
+            if (localDirPath !== options.config.fs.root) {
+                files.push('..');
+            }
+            return Promise.all(files.map(function (name) {
+                var webFilePath = path.posix.join(options.config.fs.rootName, webDirPath, name);
+                var file = new File(name, webFilePath);
+                var localFilePath = path.join(localDirPath, name);
+                return utils.fsStat(localFilePath).then(function (stats) {
+                    file.setStats(stats);
+                }, function (err) {
+                    debug('getStats error', webFilePath, err);
+                }).then(function () {
+                    return file;
+                });
+            }));
+        }, function (err) {
+            debug('fsReadDir', err);
+            var webFilePath = path.posix.join(options.config.fs.rootName, utils.safePath(options, req.query.path + '/..'));
+            var file = new File('..', webFilePath);
+            file.isDirectory = true;
+            return [file];
+        }).then(function (files) {
+            return {
+                files: files,
+                path: path.posix.join(options.config.fs.rootName, webDirPath)
+            }
+        });
+    };
+};
+module.exports = FileList;

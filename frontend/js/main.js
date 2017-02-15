@@ -42,8 +42,8 @@ define([
             }
             if (!err) {
                 var body = response.body;
-                if (body.files) {
-                    table.setFileList(body);
+                if (body.fileList) {
+                    table.setFileList(body.fileList);
                 }
                 if (body.taskList) {
                     taskList.setTaskList(body);
@@ -75,7 +75,7 @@ define([
 
             sendAction({
                 path: self.get('path') || '',
-                action: 'files'
+                action: 'fileList'
             }, function (err) {
                 if (err) {
                     throw err;

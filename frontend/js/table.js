@@ -181,10 +181,10 @@ define([
             tableNode.textContent = '';
             itemObjList.splice(0);
         };
-        this.setFileList = function (response) {
-            self.path = response.path;
+        this.setFileList = function (fileList) {
+            self.path = fileList.path;
             ee.trigger('setTitle', [self.path.split('/').slice(-1)[0]]);
-            setFiles(response.files);
+            setFiles(fileList.files);
         };
         this.changeSort = function (type, path) {
             var sortObj;
