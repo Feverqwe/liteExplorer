@@ -1,7 +1,7 @@
 /**
  * Created by Anton on 13.02.2017.
  */
-var debug = require('debug')('taskList');
+var debug = require('debug')('app:taskList');
 var path = require('path');
 var utils = require('./utils');
 

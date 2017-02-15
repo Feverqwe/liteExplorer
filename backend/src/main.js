@@ -1,7 +1,7 @@
 /**
  * Created by Anton on 11.02.2017.
  */
-var debug = require('debug')('main');
+var debug = require('debug')('app:main');
 var express = require('express');
 var ipfilter = require('express-ipfilter').IpFilter;
 var morgan = require('morgan');

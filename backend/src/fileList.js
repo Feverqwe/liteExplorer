@@ -2,7 +2,7 @@
  * Created by Anton on 15.02.2017.
  */
 "use strict";
-var debug = require('debug')('fileList');
+var debug = require('debug')('app:fileList');
 var path = require('path');
 var utils = require('./utils');
 
