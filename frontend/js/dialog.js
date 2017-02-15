@@ -1,3 +1,4 @@
+"use strict";
 define(function () {
     var Dialog = function () {
         var self = this;

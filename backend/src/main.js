@@ -10,6 +10,7 @@ var path = require('path');
 var utils = require('./utils');
 var FileList = require('./fileList');
 var TaskList = require('./taskList');
+var Pulling = require('./pulling');
 
 var options = {
     server: null,
@@ -30,6 +31,7 @@ var options = {
     }
 };
 
+options.pulling = new Pulling();
 options.taskList = new TaskList(options);
 options.fileList = new FileList(options);
 
@@ -113,6 +115,11 @@ var actions = {
 };
 
 options.expressApp.get('/fs/api', function (req, res) {
+    if (req.query.action === 'pull') {
+        options.pulling.onRequest(req, res);
+        return;
+    }
+
     new Promise(function (resolve) {
         return resolve(actions[req.query.action](req));
     }).then(function (data) {

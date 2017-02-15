@@ -11,8 +11,9 @@ define([
     './table',
     './taskList',
     './notification',
-    './head'
-], function (EventEmitter, dom, utils, Dialog, PageController, Table, TaskList, notification, Head) {
+    './head',
+    './pulling'
+], function (EventEmitter, dom, utils, Dialog, PageController, Table, TaskList, notification, Head, Pulling) {
     var ee = new EventEmitter();
 
     var config = {};
@@ -95,6 +96,8 @@ define([
     var taskList = new TaskList(ee, sendAction, table);
 
     var head = new Head(ee, config, sendAction, table);
+
+    var pulling = new Pulling(ee, table, taskList);
 
     var explorerNode = document.querySelector('.explorer');
     explorerNode.appendChild(head.node);

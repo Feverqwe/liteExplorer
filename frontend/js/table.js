@@ -1,3 +1,4 @@
+"use strict";
 define([
     '../lib/filesize.min.js',
     './dom',
