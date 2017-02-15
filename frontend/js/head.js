@@ -156,7 +156,7 @@ define([
                     e.preventDefault();
                     sendAction({
                         path: table.path,
-                        action: 'files'
+                        action: 'fileList'
                     }, function (err) {
                         if (err) {
                             throw err;
