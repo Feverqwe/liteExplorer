@@ -1,11 +1,11 @@
 /**
  * Created by Anton on 13.02.2017.
  */
-var debug = require('debug')('tasks');
+var debug = require('debug')('taskList');
 var path = require('path');
 var utils = require('./utils');
 
-var Tasks = function (options) {
+var TaskList = function (options) {
     var self = this;
     var id = 0;
     var taskList = [];
@@ -140,10 +140,6 @@ var Tasks = function (options) {
         cancel: removeTask,
         close: removeTask
     };
-
-    this.getList = function () {
-        return taskList;
-    };
     this.onTask = function (req) {
         var taskId = parseInt(req.query.taskId);
         var button = req.query.button;
@@ -178,6 +174,11 @@ var Tasks = function (options) {
             task.lock = false;
         });
     };
+    this.getList = function () {
+        return {
+            tasks: taskList
+        };
+    };
 };
 
-module.exports = Tasks;
+module.exports = TaskList;

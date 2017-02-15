@@ -118,8 +118,8 @@ define([
             });
         };
 
-        this.setTaskList = function (response) {
-            setTasks(response.taskList);
+        this.setTaskList = function (taskList) {
+            setTasks(taskList.tasks);
         };
 
         this.node = tableNode;

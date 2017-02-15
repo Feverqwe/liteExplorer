@@ -9,7 +9,7 @@ var compression = require('compression');
 var path = require('path');
 var utils = require('./utils');
 var FileList = require('./fileList');
-var Tasks = require('./tasks');
+var TaskList = require('./taskList');
 
 var options = {
     server: null,
@@ -30,7 +30,7 @@ var options = {
     }
 };
 
-options.tasks = new Tasks(options);
+options.taskList = new TaskList(options);
 options.fileList = new FileList(options);
 
 options.expressApp = express();
@@ -56,7 +56,7 @@ var actions = {
             return {
                 success: true,
                 fileList: fileList,
-                taskList: options.tasks.getList()
+                taskList: options.taskList.getList()
             };
         });
     },
@@ -92,21 +92,21 @@ var actions = {
     },
     newTask: function (req) {
         return new Promise(function (resolve) {
-           resolve(options.tasks[req.query.type].create(req));
+           resolve(options.taskList[req.query.type].create(req));
         }).then(function () {
             return {
                 success: true,
-                taskList: options.tasks.getList()
+                taskList: options.taskList.getList()
             };
         });
     },
     task: function (req) {
         return new Promise(function (resolve) {
-            resolve(options.tasks.onTask(req));
+            resolve(options.taskList.onTask(req));
         }).then(function () {
             return {
                 success: true,
-                taskList: options.tasks.getList()
+                taskList: options.taskList.getList()
             };
         });
     }

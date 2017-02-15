@@ -46,7 +46,7 @@ define([
                     table.setFileList(body.fileList);
                 }
                 if (body.taskList) {
-                    taskList.setTaskList(body);
+                    taskList.setTaskList(body.taskList);
                 }
                 callback(null, body);
             } else {
