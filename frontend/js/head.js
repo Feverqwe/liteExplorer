@@ -6,7 +6,7 @@ define([
     './dom',
     './dialog'
 ], function (dom, Dialog) {
-    var Head = function (ee, config, sendAction, table) {
+    var Head = function (ee, config, sendAction, fileList) {
         var self = this;
 
         var getNameDialog = function (name, callback) {
@@ -83,7 +83,7 @@ define([
                 name: 'folder-type',
                 value: 'local'
             });
-            var sortObj = config.sortFolder[table.path];
+            var sortObj = config.sortFolder[fileList.getPath()];
             if (sortObj) {
                 localNode.checked = true;
             } else {
@@ -116,12 +116,12 @@ define([
                             dialog.destroy();
                             var type = e.target.dataset.type;
                             if (type) {
-                                var folder = table.path;
+                                var folder = fileList.getPath();
                                 if (globalNode.checked) {
                                     folder = null;
-                                    delete config.sortFolder[table.path];
+                                    delete config.sortFolder[fileList.getPath()];
                                 }
-                                table.changeSort(type, folder);
+                                fileList.changeSort(type, folder);
                             }
                         }]
                     }),
@@ -155,7 +155,7 @@ define([
                 on: ['click', function (e) {
                     e.preventDefault();
                     sendAction({
-                        path: table.path,
+                        path: fileList.getPath(),
                         action: 'fileList'
                     }, function (err) {
                         if (err) {
@@ -188,7 +188,7 @@ define([
                     getNameDialog('New folder', function (name) {
                         sendAction({
                             action: 'newFolder',
-                            path: table.path,
+                            path: fileList.getPath(),
                             name: name
                         }, function (err) {
                             if (err) {
@@ -207,19 +207,19 @@ define([
                 title: 'Copy',
                 on: ['click', function (e) {
                     e.preventDefault();
-                    var files = table.getSelectedFiles().map(function (file) {
+                    var files = fileList.getSelectedFiles().map(function (file) {
                         return file.name
                     });
                     files.length && sendAction({
                         action: 'newTask',
                         type: 'copy',
-                        path: table.path,
+                        path: fileList.getPath(),
                         files: JSON.stringify(files)
                     }, function (err) {
                         if (err) {
                             throw err;
                         }
-                        table.resetSelect();
+                        fileList.resetSelect();
                     });
                 }]
             });
@@ -232,21 +232,21 @@ define([
                 title: 'Rename',
                 on: ['click', function (e) {
                     e.preventDefault();
-                    var files = table.getSelectedFiles().map(function (file) {
+                    var files = fileList.getSelectedFiles().map(function (file) {
                         return file.name
                     });
 
                     files.length && getNameDialog(files[0], function (name) {
                         sendAction({
                             action: 'rename',
-                            path: table.path,
+                            path: fileList.getPath(),
                             file: files[0],
                             name: name
                         }, function (err) {
                             if (err) {
                                 throw err;
                             }
-                            table.resetSelect();
+                            fileList.resetSelect();
                         });
                     });
                 }]
@@ -260,19 +260,19 @@ define([
                 title: 'Cut',
                 on: ['click', function (e) {
                     e.preventDefault();
-                    var files = table.getSelectedFiles().map(function (file) {
+                    var files = fileList.getSelectedFiles().map(function (file) {
                         return file.name
                     });
                     files.length && sendAction({
                         action: 'newTask',
                         type: 'cut',
-                        path: table.path,
+                        path: fileList.getPath(),
                         files: JSON.stringify(files)
                     }, function (err) {
                         if (err) {
                             throw err;
                         }
-                        table.resetSelect();
+                        fileList.resetSelect();
                     });
                 }]
             });
@@ -285,19 +285,19 @@ define([
                 title: 'Remove',
                 on: ['click', function (e) {
                     e.preventDefault();
-                    var files = table.getSelectedFiles().map(function (file) {
+                    var files = fileList.getSelectedFiles().map(function (file) {
                         return file.name
                     });
                     files.length && sendAction({
                         action: 'newTask',
                         type: 'remove',
-                        path: table.path,
+                        path: fileList.getPath(),
                         files: JSON.stringify(files)
                     }, function (err) {
                         if (err) {
                             throw err;
                         }
-                        table.resetSelect();
+                        fileList.resetSelect();
                     });
                 }]
             });

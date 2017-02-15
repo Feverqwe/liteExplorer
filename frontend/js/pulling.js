@@ -6,7 +6,7 @@ define([
     './utils',
     './notification'
 ], function (utils, notification) {
-    var Pulling = function (ee, table, taskList) {
+    var Pulling = function (ee, fileList, taskList) {
         var tabIsActive = false;
 
         var waitResponse = false;
@@ -17,7 +17,8 @@ define([
             utils.request({
                 url: './api?' + utils.param({
                     action: 'pull',
-                    taskList: JSON.stringify(taskList.getId())
+                    taskList: JSON.stringify(taskList.getId()),
+                    fileList: JSON.stringify(fileList.getId())
                 }),
                 json: true
             }, function (err, response) {
@@ -33,9 +34,10 @@ define([
                     if (body.taskList) {
                         taskList.setTaskList(body.taskList);
                     }
-                    // todo
-                    console.log('pull', body);
 
+                    if (body.fileList) {
+                        fileList.setFileList(body.fileList);
+                    }
                 } else {
                     notification('pull error!', err);
                 }

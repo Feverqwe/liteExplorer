@@ -7,7 +7,7 @@ define([
     './dom',
     './utils'
 ], function (filesize, dom, utils) {
-    var TackList = function (ee, sendAction, table) {
+    var TackList = function (ee, sendAction, fileList) {
         var self = this;
 
         var tableNode = dom.el('div', {
@@ -49,7 +49,7 @@ define([
                         append: task.files.map(function (file) {
                             return dom.el('div', {
                                 class: 'item',
-                                text: [task.fromPath, task.toPath || table.path].join(' > ') + ' ' + file
+                                text: [task.fromPath, task.toPath || '[hear]'].join(' > ') + ' ' + file
                             });
                         })
                     });
@@ -90,7 +90,7 @@ define([
                                         button: action
                                     };
                                     if (action === 'paste') {
-                                        params.path = table.path
+                                        params.path = fileList.getPath()
                                     }
                                     sendAction(params);
                                 }]

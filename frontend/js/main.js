@@ -8,12 +8,12 @@ define([
     './utils',
     './dialog',
     './pageController',
-    './table',
+    './fileList',
     './taskList',
     './notification',
     './head',
     './pulling'
-], function (EventEmitter, dom, utils, Dialog, PageController, Table, TaskList, notification, Head, Pulling) {
+], function (EventEmitter, dom, utils, Dialog, PageController, FileList, TaskList, notification, Head, Pulling) {
     var ee = new EventEmitter();
 
     var config = {};
@@ -44,7 +44,7 @@ define([
             if (!err) {
                 var body = response.body;
                 if (body.fileList) {
-                    table.setFileList(body.fileList);
+                    fileList.setFileList(body.fileList);
                 }
                 if (body.taskList) {
                     taskList.setTaskList(body.taskList);
@@ -72,7 +72,7 @@ define([
         pageController.applyUrl = function () {
             var self = pageController;
 
-            table.loadingFileList();
+            fileList.loadingFileList();
 
             sendAction({
                 path: self.get('path') || '',
@@ -91,18 +91,15 @@ define([
     })(pageController);
 
 
-    var table = new Table(config, ee);
-
-    var taskList = new TaskList(ee, sendAction, table);
-
-    var head = new Head(ee, config, sendAction, table);
-
-    var pulling = new Pulling(ee, table, taskList);
+    var fileList = new FileList(config, ee);
+    var taskList = new TaskList(ee, sendAction, fileList);
+    var head = new Head(ee, config, sendAction, fileList);
+    var pulling = new Pulling(ee, fileList, taskList);
 
     var explorerNode = document.querySelector('.explorer');
     explorerNode.appendChild(head.node);
     explorerNode.appendChild(taskList.node);
-    explorerNode.appendChild(table.node);
+    explorerNode.appendChild(fileList.node);
 
     pageController.applyUrl();
 });

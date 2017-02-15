@@ -4,8 +4,10 @@ define([
     './dom',
     './utils'
 ], function (filesize, dom, utils) {
-    var Table = function (config, ee) {
+    var FileList = function (config, ee) {
         var self = this;
+        var id = null;
+        var path = null;
 
         var tableNode = dom.el('div', {
             class: 'table'
@@ -132,7 +134,7 @@ define([
         };
 
         var sortItemObjList = function (itemObjList) {
-            var sortObj = config.sortFolder[self.path] || config.sort;
+            var sortObj = config.sortFolder[path] || config.sort;
 
             var type = sortObj.type;
             var reverse = sortObj.reverse;
@@ -177,14 +179,14 @@ define([
             sortInsertList(tableNode, sortItemObjList(itemObjList));
         };
 
-        this.path = null;
         this.loadingFileList = function () {
             tableNode.textContent = '';
             itemObjList.splice(0);
         };
         this.setFileList = function (fileList) {
-            self.path = fileList.path;
-            ee.trigger('setTitle', [self.path.split('/').slice(-1)[0]]);
+            id = fileList.id;
+            path = fileList.path;
+            ee.trigger('setTitle', [path.split('/').slice(-1)[0]]);
             setFiles(fileList.files);
         };
         this.changeSort = function (type, path) {
@@ -227,7 +229,13 @@ define([
                 }
             });
         };
+        this.getId = function () {
+            return id;
+        };
+        this.getPath = function () {
+            return path;
+        };
         this.node = tableNode;
     };
-    return Table;
+    return FileList;
 });
