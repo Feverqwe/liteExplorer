@@ -7,8 +7,18 @@ var utils = require('./utils');
 
 var TaskList = function (options) {
     var self = this;
-    var id = 0;
+    var taskId = 0;
     var taskList = [];
+    var id = 0;
+
+    var sync = function () {
+        id = Date.now();
+        options.pulling.set('taskList', JSON.stringify({
+            id: id,
+            tasks: taskList
+        }));
+    };
+    sync();
 
     var removeTask = function (task) {
         var pos = taskList.indexOf(task);
@@ -21,13 +31,13 @@ var TaskList = function (options) {
         create: function (req) {
             var webDirPath = utils.safePath(options, req.query.path);
             var files = JSON.parse(req.query.files);
-            taskList.push({
+            return {
                 type: 'remove',
-                id: ++id,
+                id: ++taskId,
                 path: path.posix.join(options.config.fs.rootName, webDirPath),
                 files: files,
                 buttons: ['cancel', 'continue']
-            });
+            };
         },
         continue: function (task, req) {
             task.buttons.splice(0);
@@ -58,13 +68,13 @@ var TaskList = function (options) {
         create: function (req) {
             var webDirPath = utils.safePath(options, req.query.path);
             var files = JSON.parse(req.query.files);
-            taskList.push({
+            return {
                 type: 'copy',
-                id: ++id,
+                id: ++taskId,
                 fromPath: path.posix.join(options.config.fs.rootName, webDirPath),
                 files: files,
                 buttons: ['cancel', 'paste']
-            });
+            };
         },
         paste: function (task, req) {
             var webDirFromPath = utils.safePath(options, task.fromPath);
@@ -75,6 +85,7 @@ var TaskList = function (options) {
                 return utils.fsStat(localDirToPath).then(function () {
                     task.buttons.splice(0);
                     task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
+                    sync();
                     return Promise.all(task.files.map(function (name) {
                         var localFromPath = path.join(localDirFromPath, name);
                         var localToPath = path.join(localDirToPath, name);
@@ -101,13 +112,13 @@ var TaskList = function (options) {
         create: function (req) {
             var webDirPath = utils.safePath(options, req.query.path);
             var files = JSON.parse(req.query.files);
-            taskList.push({
+            return {
                 type: 'cut',
-                id: ++id,
+                id: ++taskId,
                 fromPath: path.posix.join(options.config.fs.rootName, webDirPath),
                 files: files,
                 buttons: ['cancel', 'paste']
-            });
+            };
         },
         paste: function (task, req) {
             var webDirFromPath = utils.safePath(options, task.fromPath);
@@ -118,6 +129,7 @@ var TaskList = function (options) {
                 return utils.fsStat(localDirToPath).then(function () {
                     task.buttons.splice(0);
                     task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
+                    sync();
                     Promise.all(task.files.map(function (name) {
                         var localFromPath = path.join(localDirFromPath, name);
                         var localToPath = path.join(localDirToPath, name);
@@ -139,6 +151,12 @@ var TaskList = function (options) {
         },
         cancel: removeTask,
         close: removeTask
+    };
+    this.newTask = function (req) {
+        var type = req.query.type;
+        var task =  self[type].create(req);
+        taskList.push(task);
+        sync();
     };
     this.onTask = function (req) {
         var taskId = parseInt(req.query.taskId);
@@ -172,10 +190,12 @@ var TaskList = function (options) {
             debug('Task error!', task.type, err);
         }).then(function () {
             task.lock = false;
+            sync();
         });
     };
     this.getList = function () {
         return {
+            id: id,
             tasks: taskList
         };
     };

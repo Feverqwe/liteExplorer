@@ -16,7 +16,8 @@ define([
 
             utils.request({
                 url: './api?' + utils.param({
-                    action: 'pull'
+                    action: 'pull',
+                    taskList: JSON.stringify(taskList.getId())
                 }),
                 json: true
             }, function (err, response) {
@@ -29,6 +30,9 @@ define([
                 if (!err) {
                     var body = response.body;
 
+                    if (body.taskList) {
+                        taskList.setTaskList(body.taskList);
+                    }
                     // todo
                     console.log('pull', body);
 

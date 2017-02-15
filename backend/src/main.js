@@ -94,7 +94,7 @@ var actions = {
     },
     newTask: function (req) {
         return new Promise(function (resolve) {
-           resolve(options.taskList[req.query.type].create(req));
+           resolve(options.taskList.newTask(req));
         }).then(function () {
             return {
                 success: true,

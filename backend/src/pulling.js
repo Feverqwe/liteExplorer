@@ -4,21 +4,43 @@
 var debug = require('debug')('app:pulling');
 
 var Pulling = function () {
-    var waitList = [];
+    var keyValue = {};
+    var requestList = [];
     var emptyData = {
         success: true
     };
     var onRemove = function () {
         clearTimeout(this.timeout);
-        var pos = waitList.indexOf(this);
+        var pos = requestList.indexOf(this);
         if (pos !== -1) {
-            waitList.splice(pos, 1);
+            requestList.splice(pos, 1);
         }
     };
     var onSend = function (data) {
         this.remove();
         this.res.json(data);
     };
+
+    var push = function () {
+        requestList.slice(0).forEach(function (request) {
+            var hasChanges = false;
+            var result = {success: true};
+            Object.keys(keyValue).forEach(function (key) {
+                if (request.req.query[key]) {
+                    var id = JSON.parse(request.req.query[key]);
+                    var value = JSON.parse(keyValue[key]);
+                    if (id !== value.id) {
+                        hasChanges = true;
+                        result[key] = value;
+                    }
+                }
+            });
+            if (hasChanges) {
+                request.send(result);
+            }
+        });
+    };
+
     this.onRequest = function (req, res) {
         var item = {
             req: req,
@@ -29,7 +51,13 @@ var Pulling = function () {
                 item.send(emptyData);
             }, 60 * 1000)
         };
-        waitList.push(item);
+        requestList.push(item);
+
+        push();
+    };
+    this.set = function (key, value) {
+        keyValue[key] = value;
+        push();
     };
 };
 module.exports = Pulling;
