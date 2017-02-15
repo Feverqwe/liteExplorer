@@ -36,7 +36,7 @@ define([
                     notification('pull error!', err);
                 }
 
-                setTimeout(function () {
+                tabIsActive && setTimeout(function () {
                     tabIsActive && pull();
                 }, (err ? 1 : 0) * 1000);
             });
