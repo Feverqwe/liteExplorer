@@ -126,8 +126,8 @@ define([
                 setTasks(taskList.tasks);
             }
         };
-        this.getId = function () {
-            return id;
+        this.getInfo = function () {
+            return {id: id};
         };
         this.node = tableNode;
     };

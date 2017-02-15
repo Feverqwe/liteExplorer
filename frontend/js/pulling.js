@@ -17,8 +17,8 @@ define([
             utils.request({
                 url: './api?' + utils.param({
                     action: 'pull',
-                    taskList: JSON.stringify(taskList.getId()),
-                    fileList: JSON.stringify(fileList.getId())
+                    taskList: JSON.stringify(taskList.getInfo()),
+                    fileList: JSON.stringify(fileList.getInfo())
                 }),
                 json: true
             }, function (err, response) {

@@ -229,8 +229,8 @@ define([
                 }
             });
         };
-        this.getId = function () {
-            return JSON.stringify({id: id, path: path});
+        this.getInfo = function () {
+            return {id: id, path: path};
         };
         this.getPath = function () {
             return path;
