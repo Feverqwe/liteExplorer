@@ -230,7 +230,7 @@ define([
             });
         };
         this.getId = function () {
-            return id;
+            return JSON.stringify({id: id, path: path});
         };
         this.getPath = function () {
             return path;

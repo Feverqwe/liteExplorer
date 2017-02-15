@@ -92,10 +92,11 @@ var FileList = function (options) {
             file.isDirectory = true;
             return [file];
         }).then(function (files) {
+            var _path = path.posix.join(options.config.fs.rootName, webDirPath);
             return {
-                id: id,
+                id: JSON.stringify({id: id, path: _path}),
                 files: files,
-                path: path.posix.join(options.config.fs.rootName, webDirPath)
+                path: _path
             }
         });
     };

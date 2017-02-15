@@ -13,7 +13,7 @@ var TaskList = function (options) {
 
     var sync = function () {
         id = Date.now();
-        options.pulling.set('taskList', JSON.stringify({
+        options.pulling.set('taskList', utils.clone({
             id: id,
             tasks: taskList
         }));

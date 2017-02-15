@@ -28,7 +28,7 @@ var Pulling = function () {
             Object.keys(keyValue).forEach(function (key) {
                 if (request.req.query[key]) {
                     var id = JSON.parse(request.req.query[key]);
-                    var value = JSON.parse(keyValue[key]);
+                    var value = keyValue[key];
                     if (id !== value.id) {
                         hasChanges = true;
                         result[key] = value;

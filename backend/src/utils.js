@@ -142,4 +142,8 @@ utils.safePath = function (options, evalPath) {
     return pathArr.join('/');
 };
 
+utils.clone = function (obj) {
+    return JSON.parse(JSON.stringify({w:obj})).w;
+};
+
 module.exports = utils;
