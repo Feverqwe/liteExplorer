@@ -7,6 +7,7 @@ define([
     './notification'
 ], function (utils, notification) {
     var Pulling = function (ee, fileList, taskList) {
+        var sessionId = Math.random() * 100000 + '_' + parseInt(Date.now() / 1000);
         var tabIsActive = false;
 
         var waitResponse = false;
@@ -17,6 +18,7 @@ define([
             utils.request({
                 url: './api?' + utils.param({
                     action: 'pull',
+                    sessionId: sessionId,
                     taskList: JSON.stringify(taskList.getInfo()),
                     fileList: JSON.stringify(fileList.getInfo())
                 }),
