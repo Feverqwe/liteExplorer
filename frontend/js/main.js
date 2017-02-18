@@ -48,16 +48,10 @@ define([
             }
             if (!err) {
                 var body = response.body;
-                if (body.fileList) {
-                    fileList.setFileList(body.fileList);
-                }
-                if (body.taskList) {
-                    taskList.setTaskList(body.taskList);
-                }
-                callback(null, body);
+                callback && callback(null, body);
             } else {
                 notification('sendAction error!', err);
-                callback(err);
+                callback && callback(err);
             }
         });
     };

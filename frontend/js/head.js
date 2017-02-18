@@ -157,10 +157,6 @@ define([
                     sendAction({
                         path: fileList.getPath(),
                         action: 'refresh'
-                    }, function (err) {
-                        if (err) {
-                            throw err;
-                        }
                     });
                 }]
             });
@@ -190,10 +186,6 @@ define([
                             action: 'newFolder',
                             path: fileList.getPath(),
                             name: name
-                        }, function (err) {
-                            if (err) {
-                                throw err;
-                            }
                         });
                     });
                 }]
