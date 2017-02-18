@@ -15,6 +15,7 @@ var Pulling = require('./pulling');
 var options = {
     server: null,
     expressApp: null,
+    sessionIdMap: {},
     config: {
         express: {
             port: 8080,

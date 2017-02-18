@@ -65,7 +65,6 @@ var File = function (name, urlPath) {
 };
 
 var FileList = function (options) {
-    var id = 0;
     this.getList = function (req) {
         var webDirPath = utils.safePath(options, req.query.path);
         var localDirPath = path.join(options.config.fs.root, webDirPath);
@@ -94,7 +93,6 @@ var FileList = function (options) {
         }).then(function (files) {
             var _path = path.posix.join(options.config.fs.rootName, webDirPath);
             return {
-                id: JSON.stringify({id: id, path: _path}),
                 files: files,
                 path: _path
             }

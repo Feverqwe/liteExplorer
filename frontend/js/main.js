@@ -16,6 +16,10 @@ define([
 ], function (EventEmitter, dom, utils, Dialog, PageController, FileList, TaskList, notification, Head, Pulling) {
     var ee = new EventEmitter();
 
+    var options = {
+        sessionId: Math.random() * 100000 + '_' + parseInt(Date.now() / 1000)
+    };
+
     var config = {};
     try {
         config = JSON.parse(localStorage.config);
@@ -34,6 +38,7 @@ define([
     }
 
     var sendAction = function (params, callback) {
+        params.sessionId = options.sessionId;
         return utils.request({
             url: './api?' + utils.param(params),
             json: true
@@ -94,7 +99,7 @@ define([
     var fileList = new FileList(config, ee);
     var taskList = new TaskList(ee, sendAction, fileList);
     var head = new Head(ee, config, sendAction, fileList);
-    var pulling = new Pulling(ee, fileList, taskList);
+    var pulling = new Pulling(ee, fileList, taskList, options);
 
     var explorerNode = document.querySelector('.explorer');
     explorerNode.appendChild(head.node);

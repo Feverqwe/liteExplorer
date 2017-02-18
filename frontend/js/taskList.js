@@ -119,15 +119,8 @@ define([
             });
         };
 
-        var id = null;
         this.setTaskList = function (taskList) {
-            if (id !== taskList.id) {
-                id = taskList.id;
-                setTasks(taskList.tasks);
-            }
-        };
-        this.getInfo = function () {
-            return {id: id};
+            setTasks(taskList.tasks);
         };
         this.node = tableNode;
     };

@@ -6,7 +6,6 @@ define([
 ], function (filesize, dom, utils) {
     var FileList = function (config, ee) {
         var self = this;
-        var id = null;
         var path = null;
 
         var tableNode = dom.el('div', {
@@ -184,7 +183,6 @@ define([
             itemObjList.splice(0);
         };
         this.setFileList = function (fileList) {
-            id = fileList.id;
             path = fileList.path;
             ee.trigger('setTitle', [path.split('/').slice(-1)[0]]);
             setFiles(fileList.files);
@@ -228,9 +226,6 @@ define([
                     itemObj.setSelect(false);
                 }
             });
-        };
-        this.getInfo = function () {
-            return {id: id, path: path};
         };
         this.getPath = function () {
             return path;
