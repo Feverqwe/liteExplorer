@@ -33,7 +33,7 @@ var options = {
     }
 };
 
-options.pulling = new Pulling();
+options.pulling = new Pulling(options);
 options.taskList = new TaskList(options);
 options.fileList = new FileList(options);
 
@@ -57,10 +57,9 @@ options.expressApp.use('/fs/api', ipfilter(options.config.fs.ipFilter, {
 var actions = {
     fileList: function (session, req) {
         return options.fileList.getList(req).then(function (fileList) {
+            session.setFileList(fileList);
             return {
-                success: true,
-                fileList: fileList,
-                taskList: options.taskList.getList()
+                success: true
             };
         });
     },
@@ -77,6 +76,8 @@ var actions = {
             result.success = false;
             result.message = err.message;
         }).then(function () {
+            var fileList = options.fileList.getList(session.fileList.path);
+            session.setFileList(fileList);
             return result;
         });
     },
@@ -91,6 +92,8 @@ var actions = {
             result.success = false;
             result.message = err.message;
         }).then(function () {
+            var fileList = options.fileList.getList(session.fileList.path);
+            session.setFileList(fileList);
             return result;
         });
     },
@@ -98,9 +101,9 @@ var actions = {
         return new Promise(function (resolve) {
            resolve(options.taskList.newTask(req));
         }).then(function () {
+            session.setTaskList(options.taskList.getList());
             return {
-                success: true,
-                taskList: options.taskList.getList()
+                success: true
             };
         });
     },
@@ -108,9 +111,9 @@ var actions = {
         return new Promise(function (resolve) {
             resolve(options.taskList.onTask(req));
         }).then(function () {
+            session.setTaskList(options.taskList.getList());
             return {
-                success: true,
-                taskList: options.taskList.getList()
+                success: true
             };
         });
     }
@@ -123,7 +126,7 @@ options.expressApp.get('/fs/api', function (req, res) {
     }
     var session = options.sessionIdMap[sessionId];
     if (!session) {
-        session = options.sessionIdMap[sessionId] = new Session(sessionId);
+        session = options.sessionIdMap[sessionId] = new Session(sessionId, options);
     }
 
     if (req.query.action === 'pull') {

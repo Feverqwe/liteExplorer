@@ -3,61 +3,57 @@
  */
 var debug = require('debug')('app:pulling');
 
-var Pulling = function () {
-    var keyValue = {};
-    var requestList = [];
+var Pulling = function (options) {
+    var sessionIdConnection = {};
     var emptyData = {
         success: true
     };
     var onRemove = function () {
         clearTimeout(this.timeout);
-        var pos = requestList.indexOf(this);
-        if (pos !== -1) {
-            requestList.splice(pos, 1);
-        }
+        delete sessionIdConnection[this.session.id];
     };
     var onSend = function (data) {
         this.remove();
         this.res.json(data);
     };
 
-    var push = function () {
-        requestList.slice(0).forEach(function (request) {
-            var hasChanges = false;
-            var result = {success: true};
-            Object.keys(keyValue).forEach(function (key) {
-                if (request.req.query[key]) {
-                    var info = JSON.parse(request.req.query[key]);
-                    var value = keyValue[key];
-                    if (info.id !== value.id) {
-                        hasChanges = true;
-                        result[key] = value;
-                    }
-                }
-            });
-            if (hasChanges) {
-                request.send(result);
-            }
-        });
+    var sync = function (sessionId) {
+        var session = options.sessionIdMap[sessionId];
+        var connection = sessionIdConnection[sessionId];
+        if (!connection) return;
+
+        var hasChanges = false;
+        if (connection.state.fileList.id !== session.fileList.id) {
+            hasChanges = true;
+        }
+        if (connection.state.taskList.id !== session.taskList.id) {
+            hasChanges = true;
+        }
+
+        if (hasChanges) {
+            connection.send(JSON.parse(JSON.stringify(session)));
+        }
     };
 
     this.onRequest = function (session, req, res) {
-        var item = {
+        var item = sessionIdConnection[session.id] = {
             req: req,
             res: res,
+            state: {
+                fileList: JSON.parse(req.query.fileList),
+                taskList: JSON.parse(req.query.taskList)
+            },
             send: onSend,
             remove: onRemove,
             timeout: setTimeout(function () {
                 item.send(emptyData);
             }, 60 * 1000)
         };
-        requestList.push(item);
 
-        push();
+        sync(session.id);
     };
-    this.set = function (key, value) {
-        keyValue[key] = value;
-        push();
+    this.change = function (sessionId) {
+        sync(sessionId);
     };
 };
 module.exports = Pulling;

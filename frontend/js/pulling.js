@@ -19,8 +19,8 @@ define([
                     action: 'pull',
                     session: {
                         id: options.sessionId,
-                        taskList: JSON.stringify(taskList.getInfo()),
-                        fileList: JSON.stringify(fileList.getInfo())
+                        fileList: JSON.stringify(fileList.getInfo()),
+                        taskList: JSON.stringify(taskList.getInfo())
                     }
                 }),
                 json: true
