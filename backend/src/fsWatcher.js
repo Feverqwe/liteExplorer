@@ -26,7 +26,9 @@ var FsWatcher = function (options) {
                 }
 
                 promise.then(function (fileList) {
-                    session.setFileList(fileList);
+                    if (session.fileList.path === fileList.path) {
+                        session.setFileList(fileList);
+                    }
                 });
             }
         });
