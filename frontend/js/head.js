@@ -156,7 +156,7 @@ define([
                     e.preventDefault();
                     sendAction({
                         path: fileList.getPath(),
-                        action: 'fileList'
+                        action: 'refresh'
                     }, function (err) {
                         if (err) {
                             throw err;

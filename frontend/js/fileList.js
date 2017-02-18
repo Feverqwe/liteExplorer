@@ -185,6 +185,8 @@ define([
         };
         this.setFileList = function (fileList) {
             id = fileList.id;
+            if (!id) return;
+
             path = fileList.path;
             ee.trigger('setTitle', [path.split('/').slice(-1)[0]]);
             setFiles(fileList.files);

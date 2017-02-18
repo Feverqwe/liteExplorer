@@ -63,6 +63,15 @@ var actions = {
             };
         });
     },
+    refresh: function (session, req) {
+        return options.fileList.getList(req).then(function (fileList) {
+            session.setTaskList(options.taskList.getList());
+            session.setFileList(fileList);
+            return {
+                success: true
+            };
+        });
+    },
     rename: function (session, req) {
         var webDirPath = utils.safePath(options, req.query.path);
         var oldName = req.query.file;

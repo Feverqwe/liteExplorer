@@ -17,7 +17,7 @@ define([
     var ee = new EventEmitter();
 
     var options = {
-        sessionId: Math.random() * 100000 + '_' + parseInt(Date.now() / 1000)
+        sessionId: parseInt(Math.random() * 100000) + '_' + parseInt(Date.now() / 1000)
     };
 
     var config = {};

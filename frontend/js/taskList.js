@@ -122,6 +122,8 @@ define([
         var id = null;
         this.setTaskList = function (taskList) {
             id = taskList.id;
+            if (!id) return;
+
             setTasks(taskList.tasks);
         };
         this.getInfo = function () {

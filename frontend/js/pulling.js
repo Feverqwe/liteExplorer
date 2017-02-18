@@ -17,11 +17,9 @@ define([
             utils.request({
                 url: './api?' + utils.param({
                     action: 'pull',
-                    session: {
-                        id: options.sessionId,
-                        fileList: JSON.stringify(fileList.getInfo()),
-                        taskList: JSON.stringify(taskList.getInfo())
-                    }
+                    sessionId: options.sessionId,
+                    fileList: JSON.stringify(fileList.getInfo()),
+                    taskList: JSON.stringify(taskList.getInfo())
                 }),
                 json: true
             }, function (err, response) {
@@ -34,12 +32,12 @@ define([
                 if (!err) {
                     var body = response.body;
 
-                    if (body.taskList) {
-                        taskList.setTaskList(body.taskList);
-                    }
-
                     if (body.fileList) {
                         fileList.setFileList(body.fileList);
+                    }
+
+                    if (body.taskList) {
+                        taskList.setTaskList(body.taskList);
                     }
                 } else {
                     notification('pull error!', err);

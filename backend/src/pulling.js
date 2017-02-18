@@ -10,7 +10,7 @@ var Pulling = function (options) {
     };
     var onRemove = function () {
         clearTimeout(this.timeout);
-        delete sessionIdConnection[this.session.id];
+        delete sessionIdConnection[this.sessionId];
     };
     var onSend = function (data) {
         this.remove();
@@ -20,23 +20,38 @@ var Pulling = function (options) {
     var sync = function (sessionId) {
         var session = options.sessionIdMap[sessionId];
         var connection = sessionIdConnection[sessionId];
-        if (!connection) return;
+        if (!connection) {
+            debug('SessionConnection is not exits!', sessionId);
+            return;
+        }
+        if (!session) {
+            debug('Session is exits!', sessionId);
+            return;
+        }
+
+        var result = {
+            success: true
+        };
 
         var hasChanges = false;
         if (connection.state.fileList.id !== session.fileList.id) {
+            result.fileList = session.fileList;
             hasChanges = true;
         }
         if (connection.state.taskList.id !== session.taskList.id) {
+            result.taskList = session.taskList;
             hasChanges = true;
         }
 
         if (hasChanges) {
-            connection.send(JSON.parse(JSON.stringify(session)));
+            connection.send(result);
         }
     };
 
     this.onRequest = function (session, req, res) {
+        session.onConnection();
         var item = sessionIdConnection[session.id] = {
+            sessionId: session.id,
             req: req,
             res: res,
             state: {
