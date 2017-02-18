@@ -74,6 +74,8 @@ define([
                 onTabActivityChange();
             }
         });
+
+        this.pull = pull;
     };
     return Pulling;
 });

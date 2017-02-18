@@ -6,7 +6,7 @@ define([
 ], function (filesize, dom, utils) {
     var FileList = function (config, ee) {
         var self = this;
-        var id = null;
+        var id = 0;
         var path = null;
 
         var tableNode = dom.el('div', {

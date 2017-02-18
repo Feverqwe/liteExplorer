@@ -160,6 +160,7 @@ a.file__link.link-directory:hover:visited {
 
 .icon-mov,
 .icon-mkv,
+.icon-avi,
 .icon-mp4 {
     background-image: url(../img/video.svg);
 }

@@ -9,6 +9,7 @@ define([
 ], function (filesize, dom, utils) {
     var TackList = function (ee, sendAction, fileList) {
         var self = this;
+        var id = 0;
 
         var tableNode = dom.el('div', {
             class: 'taskList'
@@ -119,7 +120,6 @@ define([
             });
         };
 
-        var id = null;
         this.setTaskList = function (taskList) {
             id = taskList.id;
             if (!id) return;

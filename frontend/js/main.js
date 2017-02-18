@@ -106,5 +106,6 @@ define([
     explorerNode.appendChild(taskList.node);
     explorerNode.appendChild(fileList.node);
 
+    pulling.pull();
     pageController.applyUrl();
 });
