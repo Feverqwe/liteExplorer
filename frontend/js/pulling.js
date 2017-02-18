@@ -74,6 +74,19 @@ define([
                 onTabActivityChange();
             }
         });
+        window.addEventListener('visibilitychange', function () {
+            if (document.visibilityState === 'hidden') {
+                if (tabIsActive) {
+                    tabIsActive = false;
+                    onTabActivityChange();
+                }
+            } else {
+                if (!tabIsActive) {
+                    tabIsActive = true;
+                    onTabActivityChange();
+                }
+            }
+        });
 
         this.pull = pull;
     };
