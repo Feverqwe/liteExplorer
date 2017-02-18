@@ -129,7 +129,7 @@ var TaskList = function (options) {
                     task.buttons.splice(0);
                     task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
                     onChange();
-                    Promise.all(task.files.map(function (name) {
+                    return Promise.all(task.files.map(function (name) {
                         var localFromPath = path.join(localDirFromPath, name);
                         var localToPath = path.join(localDirToPath, name);
                         var result = {name: name};

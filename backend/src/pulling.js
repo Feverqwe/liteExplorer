@@ -21,10 +21,11 @@ var Pulling = function (options) {
         var session = options.sessionIdMap[sessionId];
         var connection = sessionIdConnection[sessionId];
         if (!connection) {
+            // debug('Connection is not exits!', sessionId);
             return;
         }
         if (!session) {
-            debug('Session is exits!', sessionId);
+            debug('Session is not exits!', sessionId);
             return;
         }
 
