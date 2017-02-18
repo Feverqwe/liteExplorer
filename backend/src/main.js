@@ -128,17 +128,16 @@ options.expressApp.get('/fs/api', function (req, res) {
 
     if (req.query.action === 'pull') {
         options.pulling.onRequest(session, req, res);
-        return;
+    } else {
+        new Promise(function (resolve) {
+            return resolve(actions[req.query.action](session, req));
+        }).then(function (data) {
+            res.json(data);
+        }).catch(function (err) {
+            debug('getApi', err);
+            res.status(500).json({success: false, message: err.message});
+        });
     }
-
-    new Promise(function (resolve) {
-        return resolve(actions[req.query.action](session, req));
-    }).then(function (data) {
-        res.json(data);
-    }).catch(function (err) {
-        debug('getApi', err);
-        res.status(500).json({success: false, message: err.message});
-    });
 });
 
 options.expressApp.use(path.posix.join('/fs', options.config.fs.rootName), express.static(options.config.fs.root));

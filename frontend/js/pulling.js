@@ -17,7 +17,11 @@ define([
             utils.request({
                 url: './api?' + utils.param({
                     action: 'pull',
-                    sessionId: options.sessionId
+                    session: {
+                        id: options.sessionId,
+                        taskList: JSON.stringify(taskList.getInfo()),
+                        fileList: JSON.stringify(fileList.getInfo())
+                    }
                 }),
                 json: true
             }, function (err, response) {

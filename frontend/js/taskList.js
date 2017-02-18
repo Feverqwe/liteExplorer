@@ -119,8 +119,13 @@ define([
             });
         };
 
+        var id = null;
         this.setTaskList = function (taskList) {
+            id = taskList.id;
             setTasks(taskList.tasks);
+        };
+        this.getInfo = function () {
+            return {id: id};
         };
         this.node = tableNode;
     };
