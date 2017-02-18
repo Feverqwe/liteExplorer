@@ -65,8 +65,8 @@ var File = function (name, urlPath) {
 };
 
 var FileList = function (options) {
-    this.getList = function (req) {
-        var webDirPath = utils.safePath(options, req.query.path);
+    this.getList = function (queryPath) {
+        var webDirPath = utils.safePath(options, queryPath);
         var localDirPath = path.join(options.config.fs.root, webDirPath);
         return utils.fsReadDir(localDirPath).then(function (files) {
             if (localDirPath !== options.config.fs.root) {
@@ -86,7 +86,7 @@ var FileList = function (options) {
             }));
         }, function (err) {
             debug('fsReadDir', err);
-            var webFilePath = path.posix.join(options.config.fs.rootName, utils.safePath(options, req.query.path + '/..'));
+            var webFilePath = path.posix.join(options.config.fs.rootName, utils.safePath(options, queryPath + '/..'));
             var file = new File('..', webFilePath);
             file.isDirectory = true;
             return [file];

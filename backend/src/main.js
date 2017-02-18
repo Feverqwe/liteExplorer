@@ -56,7 +56,7 @@ options.expressApp.use('/fs/api', ipfilter(options.config.fs.ipFilter, {
 
 var actions = {
     fileList: function (session, req) {
-        return options.fileList.getList(req).then(function (fileList) {
+        return options.fileList.getList(req.query.path).then(function (fileList) {
             session.setFileList(fileList);
             return {
                 success: true
@@ -64,7 +64,7 @@ var actions = {
         });
     },
     refresh: function (session, req) {
-        return options.fileList.getList(req).then(function (fileList) {
+        return options.fileList.getList(req.query.path).then(function (fileList) {
             session.setTaskList(options.taskList.getList());
             session.setFileList(fileList);
             return {
@@ -85,7 +85,7 @@ var actions = {
             result.success = false;
             result.message = err.message;
         }).then(function () {
-            var fileList = options.fileList.getList(session.fileList.path);
+            var fileList = options.fileList.getList(req.query.path);
             session.setFileList(fileList);
             return result;
         });
@@ -101,7 +101,7 @@ var actions = {
             result.success = false;
             result.message = err.message;
         }).then(function () {
-            var fileList = options.fileList.getList(session.fileList.path);
+            var fileList = options.fileList.getList(req.query.path);
             session.setFileList(fileList);
             return result;
         });
