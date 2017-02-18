@@ -78,14 +78,15 @@ var actions = {
         var newName = req.query.name;
         var localFromPath = path.join(options.config.fs.root, webDirPath, oldName);
         var localToPath = path.join(options.config.fs.root, webDirPath, newName);
-        var result = {name: oldName};
+        var result = {};
         return utils.fsMove(localFromPath, localToPath).then(function () {
             result.success = true;
         }, function (err) {
             result.success = false;
             result.message = err.message;
         }).then(function () {
-            var fileList = options.fileList.getList(req.query.path);
+            return options.fileList.getList(req.query.path);
+        }).then(function (fileList) {
             session.setFileList(fileList);
             return result;
         });
@@ -94,14 +95,15 @@ var actions = {
         var webDirPath = utils.safePath(options, req.query.path);
         var name = req.query.name;
         var localPath = path.join(options.config.fs.root, webDirPath, name);
-        var result = {name: name};
+        var result = {};
         return utils.fsEnsureDir(localPath).then(function () {
             result.success = true;
         }, function (err) {
             result.success = false;
             result.message = err.message;
         }).then(function () {
-            var fileList = options.fileList.getList(req.query.path);
+            return options.fileList.getList(req.query.path);
+        }).then(function (fileList) {
             session.setFileList(fileList);
             return result;
         });

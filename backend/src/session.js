@@ -11,10 +11,13 @@ var Session = function (id, options) {
 
     this.id = id;
     this.fileList = {
-        id: 0
+        id: 0,
+        path: '',
+        files: null
     };
     this.taskList = {
-        id: 0
+        id: 0,
+        tasks: null
     };
 
     var refreshTimeout = function () {
