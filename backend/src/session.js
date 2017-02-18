@@ -3,12 +3,15 @@
  */
 "use strict";
 var debug = require('debug')('app:session');
+var FsWatcher = require('./fsWatcher');
 
 var Session = function (id, options) {
     var self = this;
     var timeoutTime = 3 * 60;
     var timeoutTimer = null;
+    var destroyed = false;
 
+    var fsWatcher = new FsWatcher(options, self);
     this.id = id;
     this.fileList = {
         id: 0,
@@ -21,9 +24,11 @@ var Session = function (id, options) {
     };
 
     var refreshTimeout = function () {
+        if (destroyed) return;
+
         clearTimeout(timeoutTimer);
         timeoutTimer = setTimeout(function () {
-            delete options.sessionIdMap[id];
+            self.destroy();
         }, timeoutTime * 1000);
     };
 
@@ -52,9 +57,10 @@ var Session = function (id, options) {
         }, 50);
     };
 
-    this.setFileList = function (fileList) {
+    this.setFileList = function (fileList, byWatcher) {
         var hasChanges = setChanges(this.fileList, fileList);
         if (hasChanges) {
+            !byWatcher && fsWatcher.init(fileList);
             pullChange();
         }
     };
@@ -66,6 +72,11 @@ var Session = function (id, options) {
     };
     this.onConnection = function () {
         refreshTimeout();
+    };
+    this.destroy = function () {
+        destroyed = true;
+        delete options.sessionIdMap[id];
+        fsWatcher.destroy();
     };
 };
 
