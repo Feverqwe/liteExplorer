@@ -2,6 +2,8 @@
  * Created by anton on 18.02.17.
  */
 "use strict";
+var debug = require('debug')('app:session');
+
 var Session = function (id, options) {
     var self = this;
     var timeoutTime = 3 * 60;
