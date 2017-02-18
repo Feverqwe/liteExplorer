@@ -16,6 +16,10 @@ var FsWatcher = function (options, session) {
 
         clearTimeout(timer);
         timer = setTimeout(function () {
+            if (!options.pulling.isConnected(session.id)) {
+                return initTimer();
+            }
+
             options.fileList.getList(path).then(function (fileList) {
                 var fileListJson = JSON.stringify(fileList.files);
                 if (fileListJson !== lastFileListJson) {

@@ -70,5 +70,8 @@ var Pulling = function (options) {
     this.change = function (sessionId) {
         sync(sessionId);
     };
+    this.isConnected = function (sessionId) {
+        return !!sessionIdConnection[sessionId];
+    };
 };
 module.exports = Pulling;
