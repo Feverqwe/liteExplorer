@@ -11,6 +11,7 @@ var utils = require('./utils');
 var FileList = require('./fileList');
 var TaskList = require('./taskList');
 var Pulling = require('./pulling');
+var Session = require('./session');
 
 var options = {
     server: null,
@@ -54,7 +55,7 @@ options.expressApp.use('/fs/api', ipfilter(options.config.fs.ipFilter, {
 }));
 
 var actions = {
-    fileList: function (req) {
+    fileList: function (session, req) {
         return options.fileList.getList(req).then(function (fileList) {
             return {
                 success: true,
@@ -63,7 +64,7 @@ var actions = {
             };
         });
     },
-    rename: function (req) {
+    rename: function (session, req) {
         var webDirPath = utils.safePath(options, req.query.path);
         var oldName = req.query.file;
         var newName = req.query.name;
@@ -79,7 +80,7 @@ var actions = {
             return result;
         });
     },
-    newFolder: function (req) {
+    newFolder: function (session, req) {
         var webDirPath = utils.safePath(options, req.query.path);
         var name = req.query.name;
         var localPath = path.join(options.config.fs.root, webDirPath, name);
@@ -93,7 +94,7 @@ var actions = {
             return result;
         });
     },
-    newTask: function (req) {
+    newTask: function (session, req) {
         return new Promise(function (resolve) {
            resolve(options.taskList.newTask(req));
         }).then(function () {
@@ -103,7 +104,7 @@ var actions = {
             };
         });
     },
-    task: function (req) {
+    task: function (session, req) {
         return new Promise(function (resolve) {
             resolve(options.taskList.onTask(req));
         }).then(function () {
@@ -116,13 +117,22 @@ var actions = {
 };
 
 options.expressApp.get('/fs/api', function (req, res) {
+    var sessionId = req.query.sessionId;
+    if (!sessionId) {
+        res.status(403).json({success: false, message: "SessionId is not set!"});
+    }
+    var session = options.sessionIdMap[sessionId];
+    if (!session) {
+        session = options.sessionIdMap[sessionId] = new Session(sessionId);
+    }
+
     if (req.query.action === 'pull') {
-        options.pulling.onRequest(req, res);
+        options.pulling.onRequest(session, req, res);
         return;
     }
 
     new Promise(function (resolve) {
-        return resolve(actions[req.query.action](req));
+        return resolve(actions[req.query.action](session, req));
     }).then(function (data) {
         res.json(data);
     }).catch(function (err) {

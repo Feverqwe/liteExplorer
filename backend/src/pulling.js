@@ -41,7 +41,7 @@ var Pulling = function () {
         });
     };
 
-    this.onRequest = function (req, res) {
+    this.onRequest = function (session, req, res) {
         var item = {
             req: req,
             res: res,

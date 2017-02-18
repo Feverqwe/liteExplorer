@@ -17,9 +17,7 @@ define([
             utils.request({
                 url: './api?' + utils.param({
                     action: 'pull',
-                    session: {
-                        id: options.sessionId
-                    }
+                    sessionId: options.sessionId
                 }),
                 json: true
             }, function (err, response) {

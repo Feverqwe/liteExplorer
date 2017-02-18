@@ -2,8 +2,8 @@
  * Created by anton on 18.02.17.
  */
 "use strict";
-var Session = function () {
-    this.id = null;
+var Session = function (id) {
+    this.id = id;
     this.fileList = null;
     this.taskList = null;
     this.setFileList = function () {
