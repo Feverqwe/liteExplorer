@@ -21,7 +21,6 @@ var Pulling = function (options) {
         var session = options.sessionIdMap[sessionId];
         var connection = sessionIdConnection[sessionId];
         if (!connection) {
-            debug('SessionConnection is not exits!', sessionId);
             return;
         }
         if (!session) {
