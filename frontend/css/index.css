@@ -90,7 +90,7 @@ a.file__link {
 }
 
 a.file__link:visited {
-    color: #609;
+    color: #455A64;
 }
 
 a.file__link.link-directory {
@@ -98,7 +98,7 @@ a.file__link.link-directory {
 }
 
 a.file__link.link-directory:hover:visited {
-    color: #609;
+    color: #455A64;
 }
 
 .file:active {

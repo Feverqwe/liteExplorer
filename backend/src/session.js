@@ -67,6 +67,18 @@ var Session = function (id, options) {
             pullChange();
         }
     };
+    this.setPath = function (req) {
+        if (!req.query.fileList) return;
+
+        var path = require('path');
+        var utils = require('./utils');
+
+        var fileList = JSON.parse(req.query.fileList);
+        if (fileList.path) {
+            var webDirPath = utils.safePath(options, fileList.path);
+            this.fileList.path = path.posix.join(options.config.fs.rootName, webDirPath);
+        }
+    };
     this.onConnection = function () {
         refreshTimeout();
     };

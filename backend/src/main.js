@@ -140,6 +140,7 @@ options.expressApp.get('/fs/api', function (req, res) {
     var session = options.sessionIdMap[sessionId];
     if (!session) {
         session = options.sessionIdMap[sessionId] = new Session(sessionId, options);
+        session.setPath(req);
         options.fsWatcher.runTimer();
     }
 
