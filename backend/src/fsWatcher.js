@@ -11,6 +11,7 @@ var FsWatcher = function (options) {
     var onTimer = function () {
         var sessionIdMap = options.sessionIdMap;
         var hasListeners = false;
+        var promiseList = [];
         var pathPromiseMap = {};
         Object.keys(sessionIdMap).forEach(function (id) {
             hasListeners = true;
@@ -21,22 +22,25 @@ var FsWatcher = function (options) {
                 var promise = pathPromiseMap[path];
                 if (!promise) {
                     promise = pathPromiseMap[path] = options.fileList.getList(path);
+                    promiseList.push(promise);
                 }
 
                 promise.then(function (fileList) {
-                    session.setFileList(fileList, true);
+                    session.setFileList(fileList);
                 });
             }
         });
-        return hasListeners;
+        return Promise.all(promiseList).then(function () {
+            return hasListeners;
+        });
     };
     var startTimer = function () {
         clearTimeout(timer);
         timer = setTimeout(function () {
             timer = null;
-            if (onTimer()) {
-                startTimer();
-            }
+            onTimer().then(function (hasListeners) {
+                hasListeners && startTimer();
+            });
         }, updateInterval * 1000);
     };
 

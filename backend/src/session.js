@@ -55,7 +55,7 @@ var Session = function (id, options) {
         }, 50);
     };
 
-    this.setFileList = function (fileList, byWatcher) {
+    this.setFileList = function (fileList) {
         var hasChanges = setChanges(this.fileList, fileList);
         if (hasChanges) {
             pullChange();
