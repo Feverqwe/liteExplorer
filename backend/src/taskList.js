@@ -10,6 +10,14 @@ var TaskList = function (options) {
     var taskId = 0;
     var taskList = [];
 
+    var onChange = function () {
+        var sessionIdMap = options.sessionIdMap;
+        for (var id in sessionIdMap) {
+            var session = sessionIdMap[id];
+            session.setTaskList(self.getList());
+        }
+    };
+
     var removeTask = function (task) {
         var pos = taskList.indexOf(task);
         if (pos !== -1) {
@@ -34,6 +42,7 @@ var TaskList = function (options) {
             var webDirPath = utils.safePath(options, task.path);
             var localDirPath = path.join(options.config.fs.root, webDirPath);
             return utils.validateFiles(localDirPath, task.files).then(function () {
+                onChange();
                 return Promise.all(task.files.map(function (name) {
                     var localPath = path.join(localDirPath, name);
                     var result = {name: name};
@@ -75,6 +84,7 @@ var TaskList = function (options) {
                 return utils.fsStat(localDirToPath).then(function () {
                     task.buttons.splice(0);
                     task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
+                    onChange();
                     return Promise.all(task.files.map(function (name) {
                         var localFromPath = path.join(localDirFromPath, name);
                         var localToPath = path.join(localDirToPath, name);
@@ -118,6 +128,7 @@ var TaskList = function (options) {
                 return utils.fsStat(localDirToPath).then(function () {
                     task.buttons.splice(0);
                     task.toPath = path.posix.join(options.config.fs.rootName, webDirToPath);
+                    onChange();
                     Promise.all(task.files.map(function (name) {
                         var localFromPath = path.join(localDirFromPath, name);
                         var localToPath = path.join(localDirToPath, name);
@@ -144,6 +155,7 @@ var TaskList = function (options) {
         var type = req.query.type;
         var task =  self[type].create(req);
         taskList.push(task);
+        onChange();
     };
     this.onTask = function (req) {
         var taskId = parseInt(req.query.taskId);
@@ -177,6 +189,7 @@ var TaskList = function (options) {
             debug('Task error!', task.type, err);
         }).then(function () {
             task.lock = false;
+            onChange();
         });
     };
     this.getList = function () {
