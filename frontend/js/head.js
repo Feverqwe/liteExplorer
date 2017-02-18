@@ -11,7 +11,7 @@ define([
 
         var getNameDialog = function (name, callback) {
             var dialog = new Dialog();
-            var saveNode;
+            var saveNode, inputNode;
             dom.el(dialog.body, {
                 class: ['dialog-name'],
                 append: [
@@ -19,7 +19,7 @@ define([
                         class: 'dialog__label',
                         text: 'Name'
                     }),
-                    dialog.addInput(dom.el('input', {
+                    inputNode = dialog.addInput(dom.el('input', {
                         type: 'text',
                         name: 'name',
                         value: name,
@@ -59,6 +59,7 @@ define([
                 ]
             });
             dialog.show();
+            inputNode.focus();
         };
 
         var getSortDialog = function () {
