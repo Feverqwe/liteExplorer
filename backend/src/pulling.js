@@ -65,6 +65,10 @@ var Pulling = function (options) {
             }, 60 * 1000)
         };
 
+        item.res.socket.on('close', function () {
+            item.remove();
+        });
+
         sync(session.id);
     };
     this.change = function (sessionId) {

@@ -4,44 +4,46 @@
 "use strict";
 var debug = require('debug')('app:fsWatcher');
 
-var FsWatcher = function (options, session) {
+var FsWatcher = function (options) {
     var updateInterval = 1;
-    var path = '';
-    var lastFileListJson = '';
     var timer = null;
-    var destroyed = false;
 
-    var initTimer = function () {
-        if (destroyed) return;
+    var onTimer = function () {
+        var sessionIdMap = options.sessionIdMap;
+        var hasListeners = false;
+        var pathPromiseMap = {};
+        Object.keys(sessionIdMap).forEach(function (id) {
+            hasListeners = true;
 
+            var session = sessionIdMap[id];
+            if (options.pulling.isConnected(id)) {
+                var path = session.fileList.path;
+                var promise = pathPromiseMap[path];
+                if (!promise) {
+                    promise = pathPromiseMap[path] = options.fileList.getList(path);
+                }
+
+                promise.then(function (fileList) {
+                    session.setFileList(fileList, true);
+                });
+            }
+        });
+        return hasListeners;
+    };
+    var startTimer = function () {
         clearTimeout(timer);
         timer = setTimeout(function () {
-            if (!options.pulling.isConnected(session.id)) {
-                return initTimer();
+            timer = null;
+            if (onTimer()) {
+                startTimer();
             }
-
-            options.fileList.getList(path).then(function (fileList) {
-                var fileListJson = JSON.stringify(fileList.files);
-                if (fileListJson !== lastFileListJson) {
-                    lastFileListJson = fileListJson;
-                    session.setFileList(fileList, true);
-                }
-                initTimer();
-            }).catch(function (err) {
-                debug('getList error!', err);
-            });
         }, updateInterval * 1000);
     };
 
-    this.init = function (fileList) {
-        path = fileList.path;
-        lastFileListJson = JSON.stringify(fileList);
-        initTimer();
-    };
-    this.destroy = function () {
-        destroyed = true;
-        clearTimeout(timer);
-        timer = null;
+    this.runTimer = function () {
+        if (timer === null) {
+            startTimer();
+        }
     };
 };
 

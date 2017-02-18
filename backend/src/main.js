@@ -12,6 +12,7 @@ var FileList = require('./fileList');
 var TaskList = require('./taskList');
 var Pulling = require('./pulling');
 var Session = require('./session');
+var FsWatcher = require('./fsWatcher');
 
 var options = {
     server: null,
@@ -36,6 +37,7 @@ var options = {
 options.pulling = new Pulling(options);
 options.taskList = new TaskList(options);
 options.fileList = new FileList(options);
+options.fsWatcher = new FsWatcher(options);
 
 options.expressApp = express();
 
@@ -138,6 +140,7 @@ options.expressApp.get('/fs/api', function (req, res) {
     var session = options.sessionIdMap[sessionId];
     if (!session) {
         session = options.sessionIdMap[sessionId] = new Session(sessionId, options);
+        options.fsWatcher.runTimer();
     }
 
     if (req.query.action === 'pull') {
