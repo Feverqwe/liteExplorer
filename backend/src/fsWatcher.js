@@ -2,6 +2,7 @@
  * Created by Anton on 18.02.2017.
  */
 "use strict";
+var debug = require('debug')('app:fsWatcher');
 
 var FsWatcher = function (options, session) {
     var updateInterval = 1;
