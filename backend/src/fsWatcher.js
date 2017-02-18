@@ -23,6 +23,8 @@ var FsWatcher = function (options, session) {
                     session.setFileList(fileList, true);
                 }
                 initTimer();
+            }).catch(function (err) {
+                debug('getList error!', err);
             });
         }, updateInterval * 1000);
     };
