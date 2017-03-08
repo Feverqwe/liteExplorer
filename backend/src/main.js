@@ -61,7 +61,8 @@ var actions = {
         return options.fileList.getList(req.query.path).then(function (fileList) {
             session.setFileList(fileList);
             return {
-                success: true
+                success: true,
+                path: fileList.path
             };
         });
     },

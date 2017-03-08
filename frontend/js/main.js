@@ -50,7 +50,7 @@ define([
                 var body = response.body;
                 callback && callback(null, body);
             } else {
-                notification('sendAction error!', err);
+                ee.trigger('notify', ['sendAction error!', err]);
                 callback && callback(err);
             }
         });
@@ -76,7 +76,7 @@ define([
             sendAction({
                 path: self.get('path') || '',
                 action: 'fileList'
-            }, function (err) {
+            }, function (err, body) {
                 if (err) {
                     throw err;
                 }
@@ -89,6 +89,9 @@ define([
         };
     })(pageController);
 
+    ee.on('notify', function () {
+        notification.apply(null, arguments);
+    });
 
     var fileList = new FileList(config, ee);
     var taskList = new TaskList(ee, sendAction, fileList);

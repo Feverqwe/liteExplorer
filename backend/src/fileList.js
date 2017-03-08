@@ -91,7 +91,7 @@ var FileList = function (options) {
             file.isDirectory = true;
             return [file];
         }).then(function (files) {
-            var _path = path.posix.join(options.config.fs.rootName, webDirPath);
+            var _path = path.posix.join('/', options.config.fs.rootName, webDirPath);
             return {
                 files: files,
                 path: _path

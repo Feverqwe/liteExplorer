@@ -6,7 +6,9 @@ define([
     './dom'
 ], function (dom) {
     var notification = function () {
-        var text = [].slice.call(arguments).map(function (item) {
+        var args = [].slice.call(arguments);
+        console.log.apply(console, ['notify'].concat(args));
+        var text = args.map(function (item) {
             if (item instanceof Error) {
                 return [item.code, item.message].join(':');
             } else {
